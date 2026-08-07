@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "xai-ids"
+version = "0.1.0"
+description = "Reproducible benchmarking framework for the tamper resistance of XAI methods in ML-based intrusion detection systems"
+readme = "README.md"
+# Capped below 3.13: the ML stack (shap -> numba -> llvmlite) has no wheels for
+# 3.13/3.14 yet, so newer interpreters fall back to building an ancient llvmlite.
+requires-python = ">=3.10,<3.13"
+# license: choose in Phase 10 (packaging) — e.g. license = "MIT" plus a LICENSE file.
+authors = [{ name = "Clifford" }]
+dependencies = [
+    "pyyaml>=6.0",
+    "pydantic>=2.5",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+# Heavy ML stack — needed from Phase 2 onward, not for the Phase 1 skeleton.
+# Install with:  uv sync --extra ml
+ml = [
+    "pandas>=2.0",
+    "scikit-learn>=1.3",
+    "xgboost>=2.0",
+    "torch>=2.1",
+    "shap>=0.46",
+    "lime>=0.2",
+    "imbalanced-learn>=0.12",
+    "scipy>=1.11",
+    # Pin the numba/llvmlite chain (pulled by shap) to versions with 3.10-3.12
+    # wheels; without these floors the universal resolver falls back to an
+    # ancient llvmlite 0.36 that has no modern wheels and fails to build.
+    "numba>=0.60",
+    "llvmlite>=0.43",
+]
+
+# Dev tooling (PEP 735 group). Installed by default with `uv sync`.
+[dependency-groups]
+dev = [
+    "pytest>=7.4",
+    "ruff>=0.4",
+]
+
+# Jupyter for quick prototyping. Opt-in:  uv sync --group notebook
+notebook = [
+    "jupyterlab>=4.0",
+    "ipykernel>=6.29",
+    "matplotlib>=3.8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/xai_ids"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

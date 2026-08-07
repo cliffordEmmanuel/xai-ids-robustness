@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Testing / tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Data & artifacts (keep the dirs, ignore contents)
+data/
+results/*
+!results/.gitkeep
+models/*
+!models/.gitkeep
+*.pkl
+*.joblib
+*.pt
+*.npz
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
