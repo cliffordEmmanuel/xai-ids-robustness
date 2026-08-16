@@ -29,6 +29,7 @@ _DEFAULTS = {
 @MODELS.register("mlp")
 class MLPModel(Model):
     name = "mlp"
+    ext = ".pt"  # native torch checkpoint (state_dict)
 
     def __init__(self, class_weight: bool = True, params: dict | None = None):
         self.class_weight = class_weight
@@ -83,6 +84,11 @@ class MLPModel(Model):
             if epoch % every == 0 or epoch == epochs:
                 _log.info("  epoch %d/%d loss=%.4f", epoch, epochs, total / max(n_batches, 1))
         return self
+
+    @property
+    def native(self):
+        """Underlying torch module (available for gradient-based explainers)."""
+        return self._model
 
     def _logits(self, X: np.ndarray):
         import torch

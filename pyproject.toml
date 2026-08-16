@@ -27,7 +27,7 @@ xai-ids = "xai_ids.cli:main"
 # Heavy ML stack — needed from Phase 2 onward, not for the Phase 1 skeleton.
 # Install with:  uv sync --extra ml
 ml = [
-    "xgboost>=2.0",
+    "xgboost>=2.0,<3",  # <3: shap TreeExplainer can't parse xgboost 3.x model format yet
     "torch>=2.1",
     "shap>=0.46",
     "lime>=0.2",

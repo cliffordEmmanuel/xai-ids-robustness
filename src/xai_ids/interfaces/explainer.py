@@ -21,8 +21,15 @@ class Explainer(ABC):
     name: str
 
     @abstractmethod
-    def explain(self, model: Model, X: np.ndarray) -> np.ndarray:
-        """Return an attribution array of shape ``(n_samples, n_features)``."""
+    def explain(
+        self, model: Model, X: np.ndarray, background: np.ndarray | None = None
+    ) -> np.ndarray:
+        """Return an attribution array of shape ``(n_samples, n_features)``.
+
+        Attributions are for the positive (attack) class. ``background`` is a
+        reference sample (train data) required by KernelSHAP and LIME; TreeSHAP
+        ignores it.
+        """
         raise NotImplementedError
 
     def target_features(self, attributions: np.ndarray, k: int = 1) -> np.ndarray:
@@ -35,13 +42,19 @@ class Explainer(ABC):
         return order[:, :k]
 
     def noise_floor(
-        self, model: Model, X: np.ndarray, repeats: int = 10
+        self,
+        model: Model,
+        X: np.ndarray,
+        background: np.ndarray | None = None,
+        repeats: int = 10,
     ) -> np.ndarray:
         """Estimate intrinsic attribution variance on unperturbed inputs.
 
-        Stochastic explainers (LIME) override or rely on this to separate
+        Stochastic explainers (LIME, KernelSHAP) rely on this to separate
         intrinsic instability (Rashomon effect) from attack-induced drift.
-        Deterministic explainers may return zeros. Default: repeated calls.
+        Deterministic explainers (TreeSHAP) return ~zeros. Default: repeated calls.
         """
-        runs = np.stack([self.explain(model, X) for _ in range(repeats)], axis=0)
+        runs = np.stack(
+            [self.explain(model, X, background) for _ in range(repeats)], axis=0
+        )
         return runs.std(axis=0)

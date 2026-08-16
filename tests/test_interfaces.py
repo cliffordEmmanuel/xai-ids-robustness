@@ -65,7 +65,7 @@ def test_attack_result_retention_rate() -> None:
 class _DummyExplainer(Explainer):
     name = "dummy"
 
-    def explain(self, model: Model, X: np.ndarray) -> np.ndarray:
+    def explain(self, model: Model, X: np.ndarray, background=None) -> np.ndarray:
         # deterministic attributions equal to the inputs
         return np.asarray(X, dtype=float)
 
