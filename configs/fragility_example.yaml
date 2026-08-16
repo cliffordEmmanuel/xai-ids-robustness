@@ -33,7 +33,7 @@ attack:
     q: 2
     delta: 0.01
   target_rule: none
-  enforce_prediction_preserved: true
+  enforce_prediction_preserved: false   # fragility: run bounded, filter preserved post-hoc
 
 metrics:
   stability: [spearman, topk_jaccard]

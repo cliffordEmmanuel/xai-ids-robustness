@@ -18,9 +18,11 @@ import json
 
 import numpy as np
 
+from .attacks import ATTACKS as _ATTACKS  # noqa: F401 - registers attacks
 from .config import load_config
 from .datasets import build_dataset  # importing the package also registers the loaders
 from .explainers import EXPLAINERS as _EXPLAINERS  # noqa: F401 - registers explainers
+from .metrics import compute_metrics
 from .models import evaluate_classification  # importing the package also registers the models
 from .registry import ATTACKS, DATASETS, EXPLAINERS, METRICS, MODELS
 from .reproducibility import (
@@ -63,6 +65,42 @@ def _make_explainer(cfg):
     return EXPLAINERS.get("lime")(
         num_samples=cfg.explainer.lime_num_samples, seed=cfg.run.seed
     )
+
+
+_STRAND_ABBR = {"fragility": "frag", "tamper": "tamp"}
+
+
+def _attack_slug(cfg) -> str:
+    ds = _DS_ABBR.get(cfg.dataset.name, cfg.dataset.name)
+    strand = _STRAND_ABBR.get(cfg.attack.strand, cfg.attack.strand)
+    return (
+        f"{ds}-{cfg.model.name}-{cfg.explainer.name}-{strand}"
+        f"-e{cfg.attack.epsilon}-s{cfg.run.seed}"
+    )
+
+
+def _make_attack(cfg):
+    a = cfg.attack
+    return ATTACKS.get(a.method)(
+        epsilon=a.epsilon,
+        steps=a.steps,
+        step_size=a.step_size,
+        spsa_q=a.spsa.q,
+        spsa_delta=a.spsa.delta,
+        target_rule=a.target_rule,
+        enforce_prediction_preserved=a.enforce_prediction_preserved,
+        seed=cfg.run.seed,
+    )
+
+
+def _true_positive_subset(model, bundle, size, seed):
+    """Select flows the model correctly flags as attacks (y==1 and predict==1)."""
+    preds = model.predict(bundle.X_test)
+    tp = np.where((bundle.y_test == 1) & (preds == 1))[0]
+    if len(tp) > size:
+        rng = np.random.default_rng(seed)
+        tp = np.sort(rng.choice(tp, size, replace=False))
+    return bundle.X_test[tp], tp
 
 
 def _cmd_validate(args: argparse.Namespace) -> int:
@@ -158,10 +196,88 @@ def _cmd_explain(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_attack(args: argparse.Namespace) -> int:
+    cfg = load_config(args.config)
+    set_seed(cfg.run.seed)
+
+    run_dir = make_run_dir(cfg.run.output_dir, _attack_slug(cfg))
+    log = setup_logging(run_dir)
+    log.info("run dir: %s", run_dir)
+
+    log.info("loading + preprocessing dataset '%s' ...", cfg.dataset.name)
+    b = build_dataset(cfg)
+    write_provenance(run_dir, cfg, cfg.run.seed)
+
+    log.info("training %s (in-memory) ...", cfg.model.name)
+    model = MODELS.get(cfg.model.name)(
+        class_weight=cfg.model.class_weight, params=cfg.model.params
+    )
+    model.fit(b.X_train, b.y_train)
+
+    X_tp, tp_idx = _true_positive_subset(
+        model, b, cfg.dataset.attack_subset_size, cfg.run.seed
+    )
+    log.info("true-positive attack subset: %d flows", len(X_tp))
+
+    explainer = _make_explainer(cfg)
+    log.info("baseline %s attributions ...", cfg.explainer.name)
+    baseline = explainer.explain(model, X_tp, background=b.X_train)
+
+    log.info(
+        "running %s attack (strand=%s, objective=%s, eps=%s, steps=%d) ...",
+        cfg.attack.method, cfg.attack.strand, cfg.attack.objective,
+        cfg.attack.epsilon, cfg.attack.steps,
+    )
+    attack = _make_attack(cfg)
+    result = attack.generate(
+        model,
+        X_tp,
+        objective=cfg.attack.objective,
+        gradient_source=cfg.attack.gradient_source,
+        explainer=explainer if cfg.attack.strand == "tamper" else None,
+    )
+    adversarial = explainer.explain(model, result.X_adv)
+
+    np.savez_compressed(
+        run_dir / "attack.npz",
+        X_adv=result.X_adv,
+        tp_indices=tp_idx,
+        baseline_attributions=baseline,
+        adversarial_attributions=adversarial,
+        prediction_preserved=result.prediction_preserved,
+    )
+
+    log.info("computing metrics ...")
+    metrics = compute_metrics(
+        baseline,
+        adversarial,
+        X_base=X_tp,
+        X_adv=result.X_adv,
+        model=model,
+        preserved=result.prediction_preserved,
+        metrics_cfg=cfg.metrics,
+        explainer=explainer,
+        targets=result.meta["targets"],
+    )
+    metrics["queries"] = result.n_queries
+    metrics["n_perturbed"] = result.meta["n_perturbed"]
+    (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
+
+    log.info(
+        "retention=%.3f perturbed=%d/%d queries=%d",
+        result.retention_rate, result.meta["n_perturbed"], len(X_tp), result.n_queries,
+    )
+    _keys = ("drift", "spearman", "topk", "tamper")
+    _summary = {k: v for k, v in metrics.items() if k.startswith(_keys)}
+    log.info("metrics: %s", _summary)
+    log.info("saved -> %s", run_dir)
+    return 0
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     raise SystemExit(
-        "`run` needs the attack/metric modules (Phases 5-6). "
-        "Available now: validate, list, prepare, train, explain."
+        "`run` needs the metric module (Phase 6). "
+        "Available now: validate, list, prepare, train, explain, attack."
     )
 
 
@@ -188,6 +304,10 @@ def build_parser() -> argparse.ArgumentParser:
     ex = sub.add_parser("explain", help="compute baseline attributions (config-only)")
     ex.add_argument("config")
     ex.set_defaults(func=_cmd_explain)
+
+    at = sub.add_parser("attack", help="run an adversarial attack (config-only)")
+    at.add_argument("config")
+    at.set_defaults(func=_cmd_attack)
 
     r = sub.add_parser("run", help="run a full experiment (Phases 4-6)")
     r.add_argument("config")

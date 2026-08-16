@@ -260,6 +260,29 @@ overflow worker for extra cells, since each cell is independent.
 
 ---
 
+## Research grounding (decision → citation)
+
+Each attack-module decision and the literature that supports it. Bib keys are for
+the thesis `references.bib` (verify exact fields against Zotero).
+
+| Decision | Grounding |
+|---|---|
+| FGSM / PGD, ε-bounded L∞ | `goodfellowExplainingHarnessingAdversarial2015` (FGSM); `madryDeepLearningModels2018` (PGD) |
+| SPSA gradient-free estimation | `uesatoAdversarialRiskDangers2018` (SPSA as a *strong* attack; weak attacks mislead); `spallMultivariateStochasticApproximation1992` (the estimator) |
+| Trees are non-differentiable → query-based attack | `kantchelianEvasionHardeningTree2016` |
+| Black-box, query-only threat model | `chenZOOZerothOrder2017` (ZOO); `ilyasBlackboxAdversarialAttacks2018` (query-efficient black-box) |
+| Tamper: perturb input to change explanation while prediction is preserved | `ghorbaniInterpretationNeuralNetworks2019` (fragile interpretation, prediction unchanged); `dombrowskiExplanationsManipulatedGeometry2019` (targeted explanation manipulation); `banieckiAdversarialAttacksDefenses2024` (I-attack taxonomy) |
+| SHAP/LIME are manipulable (motivation) | `slackFoolingLIMESHAP2020`; `miaExplainableVulnerableAdversarial2025` (cyber-tabular) |
+| Top-1 suppression objective (hide decisive feature) | `ghorbaniInterpretationNeuralNetworks2019` (targeted top-k saliency); `banieckiAdversarialAttacksDefenses2024` |
+| Fragility = explanation sensitivity baseline | `alvarezmelisRobustnessInterpretabilityMethods2018` (local-Lipschitz robustness); `ghorbaniInterpretationNeuralNetworks2019` |
+| Noise floor / intrinsic explanation variance | `mullerEmpiricalEvaluationRashomon2023`; `ribeiroHowReliableStable2024` |
+
+**Honest caveat:** Ghorbani, Dombrowski, and Alvarez-Melis are on neural
+networks / images. This study's contribution is the tabular-IDS, architecture-
+aware, SHAP/LIME-specific version — the gap, not a claim these did it.
+
+---
+
 ## References
 
 - Goodfellow, Shlens & Szegedy (2015). *Explaining and Harnessing Adversarial

@@ -78,7 +78,7 @@ class MetricsConfig(_Base):
         default_factory=lambda: ["spearman", "topk_jaccard"]
     )
     fidelity: list[Literal["local_fidelity", "deletion", "insertion"]] = Field(
-        default_factory=lambda: ["local_fidelity", "deletion", "insertion"]
+        default_factory=lambda: ["deletion", "insertion"]  # local_fidelity deferred
     )
     drift: list[Literal["cosine", "l1", "l2"]] = Field(
         default_factory=lambda: ["cosine", "l1", "l2"]
