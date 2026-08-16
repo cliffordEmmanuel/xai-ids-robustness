@@ -9,7 +9,7 @@ run:
 dataset:
   name: unsw_nb15
   normalise: standard
-  balance: smote_train_only
+  balance: none            # imbalance handled at model level (class weights)
   attack_subset_size: 500
 
 model:

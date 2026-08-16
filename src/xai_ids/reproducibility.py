@@ -45,7 +45,7 @@ def set_seed(seed: int) -> None:
         torch.manual_seed(seed)
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(seed)
-    except ImportError:
+    except Exception:  # noqa: BLE001 - absent or unusable torch must not break seeding
         pass
 
 
@@ -102,7 +102,7 @@ def setup_logging(
     logger.addHandler(stream)
 
     if run_dir is not None:
-        file_handler = logging.FileHandler(Path(run_dir) / "run.log")
+        file_handler = logging.FileHandler(Path(run_dir) / "run.log", mode="w")
         file_handler.setFormatter(fmt)
         logger.addHandler(file_handler)
 
