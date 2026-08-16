@@ -1,13 +1,14 @@
 """Command-line entry point for the framework.
 
 Thin layer: parse args, delegate to library functions. Subcommands grow as
-phases land — ``validate``, ``list``, ``prepare`` and ``train`` work now; ``run``
-arrives with the explainer/attack/metric modules (Phases 4-6).
+phases land — ``validate``, ``list``, ``prepare``, ``train`` and ``explain`` work
+now; ``run`` arrives with the attack/metric modules (Phases 5-6).
 
     xai-ids validate configs/tamper_example.yaml
-    xai-ids list models
+    xai-ids list explainers
     xai-ids prepare configs/tamper_example.yaml
     xai-ids train configs/tamper_example.yaml
+    xai-ids explain configs/tamper_example.yaml
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ import numpy as np
 
 from .config import load_config
 from .datasets import build_dataset  # importing the package also registers the loaders
+from .explainers import EXPLAINERS as _EXPLAINERS  # noqa: F401 - registers explainers
 from .models import evaluate_classification  # importing the package also registers the models
 from .registry import ATTACKS, DATASETS, EXPLAINERS, METRICS, MODELS
 from .reproducibility import (
@@ -44,6 +46,23 @@ def _train_slug(cfg) -> str:
     """Deterministic run-dir name for training: ``<ds>-<model>-s<seed>``."""
     ds = _DS_ABBR.get(cfg.dataset.name, cfg.dataset.name)
     return f"{ds}-{cfg.model.name}-s{cfg.run.seed}"
+
+
+def _explain_slug(cfg) -> str:
+    """Run-dir name for explanation: ``<ds>-<model>-<explainer>-s<seed>``."""
+    ds = _DS_ABBR.get(cfg.dataset.name, cfg.dataset.name)
+    return f"{ds}-{cfg.model.name}-{cfg.explainer.name}-s{cfg.run.seed}"
+
+
+def _make_explainer(cfg):
+    """Construct the configured explainer with its relevant hyperparameters."""
+    if cfg.explainer.name == "shap":
+        return EXPLAINERS.get("shap")(
+            backend=cfg.explainer.shap_backend, seed=cfg.run.seed
+        )
+    return EXPLAINERS.get("lime")(
+        num_samples=cfg.explainer.lime_num_samples, seed=cfg.run.seed
+    )
 
 
 def _cmd_validate(args: argparse.Namespace) -> int:
@@ -105,16 +124,44 @@ def _cmd_train(args: argparse.Namespace) -> int:
         "metrics: %s", " ".join(f"{k}={v:.4f}" for k, v in metrics.items())
     )
 
-    model.save(run_dir / f"model_{cfg.model.name}.bin")
+    model.save(run_dir / f"model{model.ext}")
     (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
     log.info("saved model + metrics -> %s", run_dir)
     return 0
 
 
+def _cmd_explain(args: argparse.Namespace) -> int:
+    cfg = load_config(args.config)
+    set_seed(cfg.run.seed)
+
+    run_dir = make_run_dir(cfg.run.output_dir, _explain_slug(cfg))
+    log = setup_logging(run_dir)
+    log.info("run dir: %s", run_dir)
+
+    log.info("loading + preprocessing dataset '%s' ...", cfg.dataset.name)
+    b = build_dataset(cfg)
+    write_provenance(run_dir, cfg, cfg.run.seed)
+
+    log.info("training %s (in-memory) ...", cfg.model.name)
+    model = MODELS.get(cfg.model.name)(
+        class_weight=cfg.model.class_weight, params=cfg.model.params
+    )
+    model.fit(b.X_train, b.y_train)
+
+    log.info("computing %s baseline attributions on the attack subset ...", cfg.explainer.name)
+    explainer = _make_explainer(cfg)
+    attrs = explainer.explain(model, b.X_attack, background=b.X_train)
+
+    out = run_dir / "baseline_attributions.npz"
+    np.savez_compressed(out, attributions=attrs, attack_indices=b.attack_indices)
+    log.info("baseline attributions: shape=%s -> %s", attrs.shape, out)
+    return 0
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     raise SystemExit(
-        "`run` needs the explainer/attack/metric modules (Phases 4-6). "
-        "Available now: validate, list, prepare, train."
+        "`run` needs the attack/metric modules (Phases 5-6). "
+        "Available now: validate, list, prepare, train, explain."
     )
 
 
@@ -137,6 +184,10 @@ def build_parser() -> argparse.ArgumentParser:
     tr = sub.add_parser("train", help="train + evaluate a model (config-only)")
     tr.add_argument("config")
     tr.set_defaults(func=_cmd_train)
+
+    ex = sub.add_parser("explain", help="compute baseline attributions (config-only)")
+    ex.add_argument("config")
+    ex.set_defaults(func=_cmd_explain)
 
     r = sub.add_parser("run", help="run a full experiment (Phases 4-6)")
     r.add_argument("config")

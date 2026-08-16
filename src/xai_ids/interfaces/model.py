@@ -17,6 +17,7 @@ class Model(ABC):
     """Abstract IDS classifier."""
 
     name: str
+    ext: str = ".bin"  # on-disk model file extension (overridden per model)
 
     @abstractmethod
     def fit(self, X: np.ndarray, y: np.ndarray) -> Model:

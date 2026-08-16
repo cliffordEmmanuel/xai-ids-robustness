@@ -26,6 +26,7 @@ _DEFAULTS = {
 @MODELS.register("xgboost")
 class XGBoostModel(Model):
     name = "xgboost"
+    ext = ".ubj"  # native XGBoost UBJSON (portable, no pickle)
 
     def __init__(self, class_weight: bool = True, params: dict | None = None):
         self.class_weight = class_weight
@@ -43,6 +44,11 @@ class XGBoostModel(Model):
         self._model.fit(X, y)
         return self
 
+    @property
+    def native(self):
+        """Underlying XGBClassifier (needed by TreeSHAP)."""
+        return self._model
+
     def predict(self, X: np.ndarray) -> np.ndarray:
         return self._model.predict(X)
 
@@ -50,16 +56,15 @@ class XGBoostModel(Model):
         return self._model.predict_proba(X)
 
     def save(self, path: str | Path) -> None:
-        import joblib
-
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        joblib.dump(self._model, path)
+        self._model.save_model(str(path))  # native format inferred from extension
 
     @classmethod
     def load(cls, path: str | Path) -> XGBoostModel:
-        import joblib
+        import xgboost as xgb
 
         obj = cls()
-        obj._model = joblib.load(path)
+        obj._model = xgb.XGBClassifier()
+        obj._model.load_model(str(path))
         return obj

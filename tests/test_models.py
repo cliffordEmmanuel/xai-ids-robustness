@@ -53,7 +53,7 @@ def test_fit_predict_evaluate_saveload(tmp_path, name):
     assert set(m) == {"accuracy", "precision", "recall", "f1"}
     assert 0.0 <= m["accuracy"] <= 1.0
 
-    path = tmp_path / f"model_{name}.bin"
+    path = tmp_path / f"model{model.ext}"
     model.save(path)
     reloaded = MODELS.get(name).load(path)
     assert np.allclose(reloaded.predict_proba(X), proba, atol=1e-4)
