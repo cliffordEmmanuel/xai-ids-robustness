@@ -62,9 +62,29 @@ scripts/               # CLI helpers (e.g. config validation)
 tests/                 # unit tests
 ```
 
+## Data
+
+Datasets are downloaded manually and placed in `data/` (gitignored):
+
+- CICIDS2017 — https://www.unb.ca/cic/datasets/ids-2017.html → `data/raw/cicids2017/*.csv`
+- UNSW-NB15 — https://research.unsw.edu.au/projects/unsw-nb15-dataset → `data/raw/unsw_nb15/UNSW_NB15_{training,testing}-set.csv`
+
+Loaders take the folder path and read whatever CSVs are there. Both datasets are free for academic use and are cited.
+
+## CLI
+
+Single entry point (`xai-ids`). Subcommands grow as phases land:
+
+```bash
+uv run xai-ids validate configs/tamper_example.yaml   # validate a config
+uv run xai-ids list datasets                           # list registered components
+uv run xai-ids prepare configs/tamper_example.yaml     # load + preprocess
+uv run xai-ids train configs/tamper_example.yaml       # train + evaluate a model (needs [ml])
+uv run xai-ids run configs/tamper_example.yaml         # full experiment (Phases 4-6)
+```
+
 ## Quick check
 
 ```bash
-uv run python scripts/validate_config.py configs/fragility_example.yaml
 uv run pytest
 ```

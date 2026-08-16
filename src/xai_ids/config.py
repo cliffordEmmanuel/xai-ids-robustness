@@ -9,7 +9,7 @@ inconsistent experiment fails fast at load time rather than deep inside a run.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -33,15 +33,19 @@ class RunConfig(_Base):
 
 class DatasetConfig(_Base):
     name: Literal["cicids2017", "unsw_nb15"]
+    data_dir: str | None = None  # defaults to the loader's own data/raw/<name>
     normalise: Literal["standard", "minmax", "none"] = "standard"
-    balance: Literal["smote_train_only", "undersample_train_only", "none"] = (
-        "smote_train_only"
-    )
+    # Default: handle imbalance at the model level (class weights), not by
+    # resampling. undersample/smote remain available for sensitivity checks.
+    balance: Literal["none", "undersample_train_only", "smote_train_only"] = "none"
+    test_size: float = Field(0.2, gt=0.0, lt=1.0)
     attack_subset_size: int = Field(500, gt=0)
 
 
 class ModelConfig(_Base):
     name: Literal["xgboost", "mlp"]
+    class_weight: bool = True  # handle imbalance at the model level
+    params: dict[str, Any] = Field(default_factory=dict)  # per-model hyperparameters
 
 
 class ExplainerConfig(_Base):

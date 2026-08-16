@@ -44,6 +44,11 @@ class DataBundle:
     def n_features(self) -> int:
         return self.X_train.shape[1]
 
+    @property
+    def feature_index(self) -> dict[str, int]:
+        """Map feature name -> column index (for the tamper target rule)."""
+        return {name: i for i, name in enumerate(self.feature_names)}
+
 
 class Dataset(ABC):
     """Abstract dataset loader."""
