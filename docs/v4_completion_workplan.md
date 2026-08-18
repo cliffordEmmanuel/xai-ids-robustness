@@ -23,7 +23,15 @@ must not be mixed into `results/v4/`.
 
 ## Phase 10: freeze the final configuration set
 
-Create distinct v4 specifications rather than altering prior v3/v4 candidates.
+Distinct v4 specifications have been created rather than altering prior v3/v4
+candidates:
+
+- `configs/v4_core_fragility.spec.yaml`;
+- `configs/v4_core_tamper.spec.yaml`;
+- `configs/v4_kernel_xgboost_control.spec.yaml`;
+- `configs/v4_rank_margin.spec.yaml`;
+- `configs/v4_core_smoke.spec.yaml`;
+- `configs/v4_kernel_xgboost_smoke.spec.yaml`.
 
 1. **Core fragility grid — 108 rows.**
    - Datasets: CICIDS2017, UNSW-NB15.
@@ -34,7 +42,7 @@ Create distinct v4 specifications rather than altering prior v3/v4 candidates.
    - PGD, epsilon 0.03, top-1 suppression objective.
 3. **KernelSHAP XGBoost backend control — 12 rows.**
    - Both datasets, both strands, PGD, epsilon 0.03, seeds 42, 7, 123.
-   - Fixed prevalidated candidate: `shap_kernel_nsamples: 1000`,
+   - Seed-42 calibration candidate: `shap_kernel_nsamples: 1000`,
      `shap_kernel_l1_reg: 0.0001`.
    - Three fresh stability repeats and `require_shap_kernel_stability: true`.
 4. **Rank-margin sensitivity — 18 rows, only after core validation.**
@@ -46,7 +54,19 @@ The full final real-data release will therefore contain **156 rows**
 rank-margin sensitivity.
 
 **Acceptance gate:** every generated config validates; the final specs contain
-no KernelSHAP-on-MLP cell; the backend control uses the selected v2 setting.
+no KernelSHAP-on-MLP cell; the backend control uses the seed-42 candidate.
+
+### G0: release freeze (after Phase 10 and before smoke execution)
+
+Run the full test suite and Ruff, review the generated configuration counts,
+then make one local release commit and tag it. The commit must include the
+source, tests, specs, docs, and dependency lockfile required to reproduce v4;
+raw result directories remain release artifacts rather than routine source
+inputs. Record the commit hash/tag in the final v4 manifest.
+
+This gate is deliberately after Phase 10: the frozen revision must include the
+actual final specs. Any later source/configuration change requires a new commit
+and tag before results are accepted as v4 evidence.
 
 ## Phase 11: smoke gates
 
@@ -54,13 +74,14 @@ Run small, separate real-data smokes before the full grids.
 
 1. A non-KernelSHAP smoke covering both strands and the valid LIME/TreeSHAP
    paths.
-2. A strict KernelSHAP-on-XGBoost smoke covering both datasets and both strands
-   at `nsamples=1000`, `l1_reg=0.0001`.
+2. A strict KernelSHAP-on-XGBoost smoke covering both datasets, both strands,
+   and seeds 42, 7, and 123 at `nsamples=1000`, `l1_reg=0.0001`.
 
-The strict backend smoke must validate with zero convergence warnings, finite
-attributions, local accuracy within its tolerance, and repeat drift within its
-predeclared limit. A failure removes the backend-control claim; it does not
-block the LIME/TreeSHAP core release.
+The strict backend smoke is the first multi-seed test of a candidate that only
+passed the calibration at seed 42. It must validate with zero convergence
+warnings, finite attributions, local accuracy within its tolerance, and repeat
+drift within its predeclared limit. A failure removes the backend-control claim;
+it does not block the LIME/TreeSHAP core release.
 
 **Acceptance gate:** every smoke passes `validate-results` against its exact
 specification and its per-flow/output artifacts reconcile with the summaries.
@@ -74,7 +95,9 @@ specification and its per-flow/output artifacts reconcile with the summaries.
 
 **Acceptance gate:** all planned core rows are present exactly once; all run
 manifests, per-flow records, query counts, model-quality fields, LIME noise
-artifacts, and KernelSHAP control diagnostics validate.
+artifacts, and KernelSHAP control diagnostics validate. Re-check that each
+comparative row satisfies the declared attack-class recall and F1 thresholds of
+0.80; do not assume a new v4 training run reproduces the archived v3 values.
 
 ## Phase 13: rank-margin sensitivity
 
@@ -114,8 +137,9 @@ one concise figure/table. Stop after the predetermined artifacts are produced.
 3. Use bootstrap intervals only as conditional within-cell precision.
 4. For LIME, report raw attack drift alongside benign repeat drift and the
    paired attack-minus-noise result.
-5. Report TreeSHAP-versus-KernelSHAP-on-XGBoost as a backend-sensitivity test.
-   It is not an architecture comparison.
+5. Report TreeSHAP-versus-KernelSHAP-on-XGBoost as a backend-sensitivity
+   spot-check at PGD/epsilon=0.03. It is neither a full fragility-surface result
+   nor an architecture comparison.
 6. Include both KernelSHAP calibration summaries as a measured limitation; do
    not report their attack outcomes as robustness results.
 7. Write a v4 manifest and artifact archive after results, analyses, specs, and

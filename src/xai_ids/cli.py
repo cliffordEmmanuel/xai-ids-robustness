@@ -141,17 +141,50 @@ def _expand_spec(spec: dict) -> list[dict]:
     kernel_shap = spec.get("kernel_shap", {})
     if not isinstance(kernel_shap, dict):
         raise ValueError("grid spec kernel_shap must be a mapping when supplied")
+    configured_pairs = spec.get("model_explainer_pairs")
+    if configured_pairs is not None:
+        if not isinstance(configured_pairs, list) or not configured_pairs:
+            raise ValueError("grid spec model_explainer_pairs must be a non-empty list")
+        if "model" in axes or "explainer" in axes:
+            raise ValueError(
+                "grid spec cannot combine model_explainer_pairs with model/explainer axes"
+            )
+        pairs: list[dict] = []
+        for pair in configured_pairs:
+            if not isinstance(pair, dict) or not {"model", "explainer"} <= pair.keys():
+                raise ValueError(
+                    "each model_explainer_pairs entry must map model and explainer"
+                )
+            unexpected = set(pair) - {"model", "explainer", "shap_backend"}
+            if unexpected:
+                raise ValueError(
+                    "model_explainer_pairs has unsupported fields: "
+                    + ", ".join(sorted(unexpected))
+                )
+            pairs.append(pair)
+    else:
+        if "model" not in axes or "explainer" not in axes:
+            raise ValueError(
+                "grid spec requires model and explainer axes when model_explainer_pairs is absent"
+            )
+        pairs = [{"model": None, "explainer": None}]
     keys = list(axes)
     configs = []
-    for combo in itertools.product(*[axes[k] for k in keys]):
+    for pair, combo in itertools.product(pairs, itertools.product(*[axes[k] for k in keys])):
         vals = dict(zip(keys, combo, strict=True))
         c = deepcopy(base)
         c.setdefault("run", {})["seed"] = vals["seed"]
         c.setdefault("dataset", {})["name"] = vals["dataset"]
-        c.setdefault("model", {})["name"] = vals["model"]
-        c.setdefault("explainer", {})["name"] = vals["explainer"]
-        if vals["explainer"] == "shap":
-            c["explainer"]["shap_backend"] = "tree" if vals["model"] == "xgboost" else "kernel"
+        model_name = pair["model"] if configured_pairs is not None else vals["model"]
+        explainer_name = pair["explainer"] if configured_pairs is not None else vals["explainer"]
+        c.setdefault("model", {})["name"] = model_name
+        c.setdefault("explainer", {})["name"] = explainer_name
+        if explainer_name == "shap":
+            c["explainer"]["shap_backend"] = (
+                "tree" if model_name == "xgboost" else "kernel"
+            )
+        if "shap_backend" in pair:
+            c["explainer"]["shap_backend"] = pair["shap_backend"]
         if "shap_backend" in vals:
             c["explainer"]["shap_backend"] = vals["shap_backend"]
         if "shap_background_size" in vals:

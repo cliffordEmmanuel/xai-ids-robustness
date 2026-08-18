@@ -63,67 +63,40 @@ Download the datasets once and place them in `data/` (gitignored):
 ## Run the experiments
 
 The archived `results/v3/` record validates structurally, but its KernelSHAP
-cells emitted convergence warnings and are **not** final thesis evidence. Run
-the Phase 9 numerical calibration and strict KernelSHAP smoke first; the
-replacement evidence directory is `results/v4/`. `results/v1/` through
-`results/v3/` are preserved records and are never overwritten.
+cells are not final thesis evidence. Two completed calibration runs found no
+KernelSHAP-on-MLP setting stable enough for release. The bounded final v4
+release therefore uses TreeSHAP on XGBoost and LIME on both model families, with
+a separate strict KernelSHAP-on-XGBoost backend control. `results/v1/` through
+`results/v3/` and both calibration directories are preserved and never
+overwritten.
 
 ```bash
 # 1. one-time setup
 brew install libomp          # macOS only (XGBoost needs OpenMP)
 uv sync --extra ml
 
-# 2. calibrate the explicit KernelSHAP numerical setting, then inspect
-#    results/kernelshap-calibration-v1/analysis/kernel_shap_candidate_summary.csv
-uv run xai-ids grid configs/kernelshap_stability_calibration.spec.yaml
-uv run xai-ids validate-results results/kernelshap-calibration-v1 \
-  --spec configs/kernelshap_stability_calibration.spec.yaml
-uv run xai-ids analyze-results results/kernelshap-calibration-v1
+# 2. freeze the v4 source/config revision after reviewing the generated grids
+uv run pytest
+uv run ruff check src tests
 
-# 3. after applying the selected setting to the release profile, run its strict smoke
-uv run xai-ids grid configs/phase9_kernelshap_smoke.spec.yaml
-uv run xai-ids validate-results results/smoke-v4-kernelshap \
-  --spec configs/phase9_kernelshap_smoke.spec.yaml
+# 3. run both real-data release smokes
+uv run xai-ids grid configs/v4_core_smoke.spec.yaml
+uv run xai-ids validate-results results/smoke-v4-core \
+  --spec configs/v4_core_smoke.spec.yaml
+uv run xai-ids grid configs/v4_kernel_xgboost_smoke.spec.yaml
+uv run xai-ids validate-results results/smoke-v4-kernel-xgboost \
+  --spec configs/v4_kernel_xgboost_smoke.spec.yaml
 
-# 4. run the two primary v4 grids (each command generates + runs the whole grid)
-uv run xai-ids grid configs/gridB.spec.yaml     # tamper resistance  (RQ4)
-uv run xai-ids grid configs/gridA.spec.yaml     # fragility          (RQ1-3)
+# 4. run the 138-row v4 core release
+uv run xai-ids grid configs/v4_core_fragility.spec.yaml
+uv run xai-ids grid configs/v4_core_tamper.spec.yaml
+uv run xai-ids grid configs/v4_kernel_xgboost_control.spec.yaml
 ```
 
-Grid B (tamper) is smaller and the headline result — run it first. Grids are
-defined by the `configs/*.spec.yaml` files; edit their `axes` to add/remove
-datasets, models, explainers, epsilons, or seeds. The LIME and tamper cells are
-the slow ones, so start small and scale up if needed.
-
-The focused LIME-noise control is generated/run separately after the main grid:
-
-```bash
-uv run xai-ids grid configs/lime_noise_ablation.spec.yaml
-```
-
-It holds one representative fragility condition fixed while varying LIME's
-samples (1,500 / 3,000 / 5,000) across three run seeds. Each run also stores ten
-fresh-seed benign LIME explanations in `noise_floor.npz`.
-
-The Phase 6 rank-margin sensitivity control is separate from the primary tamper
-grid, so the two objectives receive distinct experiment IDs and result rows:
-
-```bash
-uv run xai-ids grid configs/tamper_rank_margin.spec.yaml
-```
-
-For every tamper flow, `per_flow.csv` records the exact attack-time target,
-target magnitude and rank before/after, and whether the original top-1 target
-left the configured top-*k* set. That final condition is the primary tamper
-success measure.
-
-Phase 7 adds two backend-control grids. Run the fragility grid first; the
-tamper grid is deliberately separate because KernelSHAP is evaluated in-loop:
-
-```bash
-uv run xai-ids grid configs/shap_kernel_xgboost_fragility.spec.yaml
-uv run xai-ids grid configs/shap_kernel_xgboost_tamper.spec.yaml
-```
+The tamper core is smaller than the fragility core, but the release claim needs
+all three core grids. The final specs deliberately use fixed
+`model_explainer_pairs`; do not add KernelSHAP/MLP cells or alter their axes in
+the release cycle. LIME and tamper cells are the slow ones.
 
 Every revised result row includes frozen-test accuracy, precision, attack-class
 recall/F1, class counts, confusion-matrix counts, and
@@ -131,23 +104,22 @@ recall/F1, class counts, confusion-matrix counts, and
 attack-class recall and F1 to be at least 0.80; lower-quality model runs remain
 in the result set as explicitly labelled evidence.
 
-## Phase 8: smoke, validate, and analyse
+## Validate and analyse v4
 
-Start each release cycle with the small real-data smoke grid. It runs both
-strands and both explainers on 12 true-positive CICIDS flows; it is a pipeline
-check, not thesis evidence.
+After the core grids complete, validate their combined 138-row table before
+analysis. The strict backend smoke/control is a PGD epsilon=0.03 spot-check,
+not a full fragility-surface claim.
+
+For the 138-row core release:
 
 ```bash
-uv run xai-ids grid configs/phase8_smoke.spec.yaml
-uv run xai-ids validate-results results/smoke-v3 --spec configs/phase8_smoke.spec.yaml
+uv run xai-ids validate-results results/v4 \
+  --spec configs/v4_core_fragility.spec.yaml \
+  --spec configs/v4_core_tamper.spec.yaml \
+  --spec configs/v4_kernel_xgboost_control.spec.yaml
 ```
 
-Inspect `metrics.json` for `explainer_warnings`, `per_flow.csv` for tamper/rank
-evidence, and `model_comparison_eligible` in `results.csv`. Smoke evidence is
-kept in `results/smoke-v3/`, separate from the final `results/v3/` table. If it
-is sound, run the planned full grids and validate all their specs together.
-
-After strict v4 validation, create the conditional within-cell analysis artifacts:
+Then create the conditional within-cell analysis artifacts:
 
 ```bash
 uv run xai-ids analyze-results results/v4
@@ -155,25 +127,14 @@ uv run xai-ids analyze-results results/v4
 
 This writes `results/v4/analysis/per_flow_bootstrap.csv`,
 `results/v4/analysis/lime_attack_vs_noise.csv`, and the KernelSHAP
-numerical-stability tables. Bootstrap intervals and paired
-sign-flip p-values are conditional within-cell summaries; they are not pooled
+numerical-stability tables. Bootstrap intervals and paired sign-flip p-values
+are conditional within-cell summaries; they are not pooled
 independent-condition tests.
 
-For the final release table, validate every planned evidence grid together
-before calling `analyze-results`:
-
-```bash
-uv run xai-ids validate-results results/v4 \
-  --spec configs/gridA.spec.yaml \
-  --spec configs/gridB.spec.yaml \
-  --spec configs/lime_noise_ablation.spec.yaml \
-  --spec configs/tamper_rank_margin.spec.yaml \
-  --spec configs/shap_kernel_xgboost_fragility.spec.yaml \
-  --spec configs/shap_kernel_xgboost_tamper.spec.yaml
-```
-
-See [`docs/kernelshap_stability.md`](docs/kernelshap_stability.md) for the
-selection rule and the full Phase 9 release gate.
+If the core validates and time permits, run the separate 18-row rank-margin
+sensitivity grid, then include `configs/v4_rank_margin.spec.yaml` in the final
+validation command. See [`docs/v4_completion_workplan.md`](docs/v4_completion_workplan.md)
+for the bounded release plan and stop rules.
 
 **Threading / OpenMP (macOS):** XGBoost defaults to a single OpenMP thread here
 (`OMP_NUM_THREADS=1`, set automatically on import) because macOS can load two
@@ -182,8 +143,8 @@ conflicting OpenMP runtimes — from XGBoost's wheel, other wheels, and Homebrew
 limit: once your environment is stable you can opt back into multithreading by
 setting the variable yourself before running, e.g. `export OMP_NUM_THREADS=8`.
 
-Long runs: `nohup uv run xai-ids grid configs/gridA.spec.yaml > gridA.log 2>&1 &`
-and watch with `tail -f gridA.log`.
+Long runs: `nohup uv run xai-ids grid configs/v4_core_fragility.spec.yaml > v4_fragility.log 2>&1 &`
+and watch with `tail -f v4_fragility.log`.
 
 ## Other commands
 

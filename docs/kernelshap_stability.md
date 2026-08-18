@@ -87,29 +87,29 @@ the estimator further before relaxing a gate: in particular, use common random
 coalition samples for the baseline-versus-adversarial comparison while retaining
 fresh-seed repeats as an external stochasticity check.
 
-## Release procedure after selection
+## V4 boundary after the completed calibrations
 
-The Phase 9 smoke and production grids currently contain the initial
-pre-registered profile `nsamples: 100`, `l1_reg: 0.0001`. Retain it only if the
-candidate summary selects it. Otherwise change the two values consistently in:
+The v2 candidate summary again found no KernelSHAP setting stable enough across
+both model families. Therefore no production KernelSHAP-on-MLP result will be
+released in v4. The v1/v2 calibration archives are the complete evidence for
+that numerical non-evaluability finding.
 
-- `configs/phase9_kernelshap_smoke_base.yaml`;
-- the `kernel_shap` section of `configs/gridA.spec.yaml`,
-  `configs/gridB.spec.yaml`, `configs/tamper_rank_margin.spec.yaml`,
-  `configs/shap_kernel_xgboost_fragility.spec.yaml`, and
-  `configs/shap_kernel_xgboost_tamper.spec.yaml`.
-
-Then run the strict release gate. It covers both datasets, both model families,
-and both attack strands with the final setting:
+One narrow candidate did pass all four seed-42 XGBoost calibration cells:
+`nsamples: 1000`, `l1_reg: 0.0001`. V4 tests it only as a strict,
+three-seed KernelSHAP-on-XGBoost backend-sensitivity control. It is not a route
+to restore MLP KernelSHAP claims. Run its smoke before the full control:
 
 ```bash
-uv run xai-ids grid configs/phase9_kernelshap_smoke.spec.yaml
-uv run xai-ids validate-results results/smoke-v4-kernelshap \
-  --spec configs/phase9_kernelshap_smoke.spec.yaml
+uv run xai-ids grid configs/v4_kernel_xgboost_smoke.spec.yaml
+uv run xai-ids validate-results results/smoke-v4-kernel-xgboost \
+  --spec configs/v4_kernel_xgboost_smoke.spec.yaml
 ```
 
-Only after that command returns `OK` should the full v4 grids be started. New
-results are isolated under `results/v4/`; v1–v3 are never overwritten.
+If that smoke fails, omit the backend-control conclusion but continue with the
+LIME/TreeSHAP core release. The full bounded v4 plan is in
+[`v4_completion_workplan.md`](v4_completion_workplan.md). New results are
+isolated under `results/v4/`; v1–v3 and the calibration directories are never
+overwritten.
 
 For a strict v4 result, `validate-results` rejects any KernelSHAP row with a
 warning, non-finite attribution, additivity failure, insufficient repeats, or

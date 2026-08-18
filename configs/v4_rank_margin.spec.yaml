@@ -1,0 +1,19 @@
+# Optional post-core sensitivity: 18 cells.
+# It differs from v4_core_tamper only by its rank-margin target objective.
+output_dir: configs/v4_rank_margin
+base: configs/v4_primary_base.yaml
+model_explainer_pairs:
+  - model: xgboost
+    explainer: shap
+    shap_backend: tree
+  - model: xgboost
+    explainer: lime
+  - model: mlp
+    explainer: lime
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  strand: [tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  target_objective: [rank_margin]
+  seed: [42, 7, 123]

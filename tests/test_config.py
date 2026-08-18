@@ -37,7 +37,16 @@ def _valid_tamper_dict() -> dict:
 # --------------------------------------------------------------------------- #
 
 
-@pytest.mark.parametrize("name", ["fragility_example.yaml", "tamper_example.yaml"])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "fragility_example.yaml",
+        "tamper_example.yaml",
+        "v4_primary_base.yaml",
+        "v4_core_smoke_base.yaml",
+        "v4_kernel_xgboost_smoke_base.yaml",
+    ],
+)
 def test_example_configs_load(name: str) -> None:
     cfg = load_config(CONFIGS / name)
     assert isinstance(cfg, ExperimentConfig)

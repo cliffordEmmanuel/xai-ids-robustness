@@ -1,0 +1,21 @@
+# Strict backend-sensitivity control: 12 cells.
+# It is a PGD/epsilon=0.03 spot-check on XGBoost, not a full fragility surface.
+output_dir: configs/v4_kernel_xgboost_control
+base: configs/v4_primary_base.yaml
+kernel_shap:
+  shap_kernel_l1_reg: 0.0001
+  shap_kernel_stability_repeats: 3
+  shap_kernel_stability_seeds: [2003, 2011, 2017]
+  shap_kernel_additivity_tolerance: 0.000001
+  shap_kernel_repeat_cosine_drift_tolerance: 0.05
+  require_shap_kernel_stability: true
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost]
+  explainer: [shap]
+  shap_backend: [kernel]
+  shap_kernel_nsamples: [1000]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42, 7, 123]

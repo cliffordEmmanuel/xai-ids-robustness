@@ -1,0 +1,13 @@
+# 12 strict cells: 2 datasets x 2 strands x 3 seeds. This establishes whether
+# the seed-42 calibration candidate survives an independent multi-seed smoke.
+output_dir: configs/v4_kernel_xgboost_smoke
+base: configs/v4_kernel_xgboost_smoke_base.yaml
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost]
+  explainer: [shap]
+  shap_backend: [kernel]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42, 7, 123]

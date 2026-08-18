@@ -5,9 +5,12 @@ from __future__ import annotations
 import copy
 import json
 import types
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
+import yaml
 
 from xai_ids.config import load_config_from_dict
 from xai_ids.interfaces import AttackResult
@@ -24,6 +27,8 @@ from xai_ids.runner import (
     train_slug,
     true_positive_subset,
 )
+
+CONFIGS = Path(__file__).resolve().parents[1] / "configs"
 
 
 def _cfg():
@@ -219,6 +224,61 @@ def test_grid_kernel_shap_profile_is_applied_only_to_kernel_cells():
         not cfg.explainer.require_shap_kernel_stability
         for cfg in configs
         if not (cfg.explainer.name == "shap" and cfg.explainer.shap_backend == "kernel")
+    )
+
+
+def test_grid_model_explainer_pairs_exclude_invalid_kernel_shap_mlp_cells():
+    from xai_ids.cli import _expand_spec
+
+    spec = {
+        "base": "configs/tamper_example.yaml",
+        "model_explainer_pairs": [
+            {"model": "xgboost", "explainer": "shap", "shap_backend": "tree"},
+            {"model": "xgboost", "explainer": "lime"},
+            {"model": "mlp", "explainer": "lime"},
+        ],
+        "axes": {
+            "dataset": ["cicids2017", "unsw_nb15"],
+            "strand": ["tamper"],
+            "method": ["pgd"],
+            "epsilon": [0.03],
+            "seed": [42],
+        },
+    }
+    configs = [load_config_from_dict(value) for value in _expand_spec(spec)]
+
+    assert len(configs) == 6
+    assert {
+        (cfg.model.name, cfg.explainer.name, cfg.explainer.shap_backend)
+        for cfg in configs
+    } == {
+        ("xgboost", "shap", "tree"),
+        ("xgboost", "lime", "tree"),
+        ("mlp", "lime", "tree"),
+    }
+
+
+@pytest.mark.parametrize(
+    ("spec_name", "expected_count"),
+    [
+        ("v4_core_fragility.spec.yaml", 108),
+        ("v4_core_tamper.spec.yaml", 18),
+        ("v4_kernel_xgboost_control.spec.yaml", 12),
+        ("v4_rank_margin.spec.yaml", 18),
+        ("v4_core_smoke.spec.yaml", 12),
+        ("v4_kernel_xgboost_smoke.spec.yaml", 12),
+    ],
+)
+def test_v4_specs_expand_to_the_predeclared_eligible_cells(spec_name, expected_count):
+    from xai_ids.cli import _expand_spec
+
+    spec = yaml.safe_load((CONFIGS / spec_name).read_text(encoding="utf-8"))
+    configs = [load_config_from_dict(value) for value in _expand_spec(spec)]
+
+    assert len(configs) == expected_count
+    assert all(
+        not (cfg.model.name == "mlp" and cfg.explainer.name == "shap")
+        for cfg in configs
     )
 
 

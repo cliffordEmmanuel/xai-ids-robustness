@@ -256,11 +256,11 @@ so no final KernelSHAP thesis conclusion may rely on that evidence record.
    grid before final execution.
 4. Use schema 3.6 and strict KernelSHAP validation for all new v4 evidence.
 
-**Phase 9b status:** configured after `kernelshap-calibration-v1` produced no
-candidate passing every numerical check. The distinct v2 calibration retains
-the predeclared gates and tests larger coalition-sample budgets (1,000/3,000)
-with explicit L1 settings (0.0001/0.001). Do not launch the Phase 9 strict smoke
-until its candidate summary contains an all-cell pass.
+**Phase 9b status:** completed. No candidate passed every numerical check across
+both model families. The v4 plan therefore excludes production
+KernelSHAP-on-MLP. The narrow XGBoost candidate (`nsamples=1000`,
+`l1_reg=0.0001`) is retained only for a contingent, strict three-seed backend
+control smoke and must not be interpreted as a general KernelSHAP release.
 
 ## Final completion scope
 
