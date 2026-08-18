@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "cf7e962da964b4af63fbb5835d6ffd096ab06357e9e396d9fd0368fe71318d9b"
+    },
+    "fidelity.json": {
+      "sha256": "ba099b78852f9c48547b9003f40ad722f08baa0c765d1de3fa17618553efbc4a"
+    },
+    "metrics.json": {
+      "sha256": "5a41f5bbb4137ce50034151f7864fe3c2a14c300eca62051a9359262c484cbb6"
+    },
+    "noise_floor.npz": {
+      "sha256": "33e8eea6483b260dc46c360141a57f5b569315bd4a7c5c02302f248b874f3017"
+    },
+    "per_flow.csv": {
+      "sha256": "13ba0838cd495083aaa827621ee57d80f4ab376bb80f9a3025238d655c6249e2"
+    },
+    "provenance.json": {
+      "sha256": "b2b768a404c76e3bfff0e0b50fc23a6b2eab96fd34259c304aa6c0ae0ccc1311"
+    }
+  },
+  "created_utc": "2026-08-18T05:12:55.441153+00:00",
+  "experiment_id": "cicids-xgboost-lime-frag-fgsm-e0.05-s123",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

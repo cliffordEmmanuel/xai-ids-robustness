@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import random
+import subprocess
 from datetime import datetime, timezone
 from importlib import metadata
 from pathlib import Path
@@ -87,6 +88,33 @@ def capture_versions() -> dict[str, str]:
     return versions
 
 
+def capture_code_state() -> dict[str, str | int | bool | None]:
+    """Record the checked-out revision and whether final runs used a dirty tree."""
+    repository = Path(__file__).resolve().parents[2]
+    try:
+        revision = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repository,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=repository,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+    except (OSError, subprocess.CalledProcessError):
+        return {"git_revision": None, "worktree_dirty": None, "changed_file_count": None}
+    return {
+        "git_revision": revision,
+        "worktree_dirty": bool(status),
+        "changed_file_count": len(status),
+    }
+
+
 def setup_logging(
     run_dir: str | Path | None = None, level: int = logging.INFO
 ) -> logging.Logger:
@@ -110,17 +138,26 @@ def setup_logging(
     return logger
 
 
-def write_provenance(run_dir: str | Path, config: Any = None, seed: int | None = None) -> Path:
-    """Write ``provenance.json`` (versions + seed + serialised config) to the run dir."""
+def write_provenance(
+    run_dir: str | Path,
+    config: Any = None,
+    seed: int | None = None,
+    *,
+    extra: dict[str, Any] | None = None,
+) -> Path:
+    """Write versions, config, and optional JSON-serialisable extra provenance."""
     run_dir = Path(run_dir)
     record: dict[str, Any] = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "seed": seed,
         "versions": capture_versions(),
+        "code": capture_code_state(),
     }
     if config is not None:
         dump = getattr(config, "model_dump", None)
         record["config"] = dump(mode="json") if callable(dump) else repr(config)
+    if extra:
+        record["extra"] = extra
 
     out = run_dir / "provenance.json"
     with out.open("w", encoding="utf-8") as f:

@@ -1,0 +1,63 @@
+{
+  "release_id": "xai-ids-v3-20260818",
+  "release_status": "archived_provisional_pending_kernel_shap_stability_fix",
+  "release_decision": "Preserve v3 as a validated evidence record, but do not use the KernelSHAP-affected results for final thesis claims.",
+  "results": {
+    "path": "results/v3",
+    "schema_version": "3.5",
+    "results_version": "v3",
+    "unique_experiment_rows": 210,
+    "results_csv_sha256": "5f398ed8639812d087aaef109a5ae3650599c2097de7acbb93ec41d86fc7a114",
+    "results_manifest_sha256": "c2dbaeb62d6e10684fefb552388590cd6b809743171e9d60a1cd434bb8368986"
+  },
+  "analysis": {
+    "path": "results/v3/analysis",
+    "bootstrap_rows": 3912,
+    "lime_paired_rows": 612,
+    "per_flow_bootstrap_sha256": "1d5f4e5a0a9b78afc814e89bf65389dfc4e3c9e9850b9b8f1d94a5794739d725",
+    "lime_attack_vs_noise_sha256": "cec42ba0d9f94df7b84aadc25d6a6bf65d38b6e94761cf39879bbff68f1d3906",
+    "analysis_manifest_sha256": "edacd7a7d0e820943b5f3d5d6cafb2391c677c9409de1d26aeaa0863d7ac8477"
+  },
+  "validated_specs": {
+    "configs/gridA.spec.yaml": "7df7cef4cb4e604a5875f5baa01d4c6fbb45780efc40a77982508b5a5b9e5944",
+    "configs/gridB.spec.yaml": "52416989e73790bb848c5e4b707db80187e74b1b5df37a1a997cb17c214ec81a",
+    "configs/shap_kernel_xgboost_fragility.spec.yaml": "e6034d272ab3da7d3f262b38ad7a1a48217f4678e4d71c9b7758153a6225af41",
+    "configs/shap_kernel_xgboost_tamper.spec.yaml": "494a482eafc0d3393321cad2e3d772341cc801dd2bc1ac35ab2ffdaba71b3245",
+    "configs/lime_noise_ablation.spec.yaml": "836033c47a4ef4956e45f0c15dea5c2813500b09678b4ed45c14a7c23f7f22c7",
+    "configs/tamper_rank_margin.spec.yaml": "81958cf9fd8feeb848f60f82c291c4e5909766991fa39362224c92fa77e7b1e6"
+  },
+  "source_snapshot": {
+    "git_revision": "b81ee43d1aa00bd8247e592418208c4f80f741a5",
+    "worktree_dirty": true,
+    "changed_file_count": 68,
+    "included": [
+      "src",
+      "tests",
+      "configs",
+      "docs",
+      "README.md",
+      "pyproject.toml",
+      "uv.lock",
+      "source/git-revision.txt",
+      "source/git-status.txt",
+      "source/working-tree.patch"
+    ]
+  },
+  "archive": {
+    "path": "results/v3-evidence-20260818.tar.gz",
+    "layout_root": "xai-ids-v3-release",
+    "bytes": 124291248,
+    "sha256": "de5119454e3ae0c15fb58ab7acfad479b6db7a95f9bceb2cc3e1735bf40c70b1"
+  },
+  "known_blocker": {
+    "component": "SHAP KernelSHAP feature selection",
+    "warning_type": "scikit-learn least-angle-regression active-set degeneracy",
+    "warning_count": 1563,
+    "affected_kernel_shap_rows": 36,
+    "required_action": "Predefine and validate a stable KernelSHAP numerical configuration, then release a clean v4 rerun."
+  },
+  "supporting_documents": {
+    "docs/v3_results_audit.md": "ec95eeb9ba6e65b0e032dc5c0644a56872aa450a5ba3e179fda47c8bd33dcb05",
+    "docs/v3_thesis_results_summary.md": "b1d53650e3c038c6acc3170250451992ca6744f3fd21bd510a88f0d40a20ff1b"
+  }
+}

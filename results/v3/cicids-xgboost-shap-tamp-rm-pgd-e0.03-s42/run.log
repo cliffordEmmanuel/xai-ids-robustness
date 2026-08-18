@@ -1,0 +1,9 @@
+2026-08-18 10:19:54,080 | INFO    | xai_ids | run dir: results/v3/cicids-xgboost-shap-tamp-rm-pgd-e0.03-s42
+2026-08-18 10:19:54,080 | INFO    | xai_ids | loading + preprocessing dataset 'cicids2017' ...
+2026-08-18 10:20:14,007 | INFO    | xai_ids | loading cached model results/v3/cicids-xgboost-s42/model.ubj
+2026-08-18 10:20:16,965 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 10:20:16,965 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-18 10:20:17,803 | INFO    | xai_ids | attack: pgd strand=tamper objective=attribution eps=0.03 steps=50
+2026-08-18 10:20:19,064 | INFO    | xai_ids | computing metrics ...
+2026-08-18 10:20:19,821 | INFO    | xai_ids | row -> results/v3/results.csv | retention=1.000
+2026-08-18 10:20:19,821 | INFO    | xai_ids | [sweep 2/24] cicids-xgboost-shap-tamp-rm-pgd-e0.03-s7

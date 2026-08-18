@@ -41,6 +41,9 @@ class XGBoostModel(Model):
             pos, neg = float((y == 1).sum()), float((y == 0).sum())
             spw = neg / pos if pos > 0 else 1.0
         self._model = xgb.XGBClassifier(scale_pos_weight=spw, **self.params)
+        # xgboost<3 + scikit-learn>=1.7: save_model reads `_estimator_type`, which the
+        # newer sklearn mixin no longer supplies. Set it explicitly so save works.
+        self._model._estimator_type = "classifier"
         self._model.fit(X, y)
         return self
 
@@ -66,5 +69,8 @@ class XGBoostModel(Model):
 
         obj = cls()
         obj._model = xgb.XGBClassifier()
+        # See fit(): xgboost<3 reads `_estimator_type`, which scikit-learn>=1.7 no
+        # longer supplies via its mixin. load_model checks it too.
+        obj._model._estimator_type = "classifier"
         obj._model.load_model(str(path))
         return obj

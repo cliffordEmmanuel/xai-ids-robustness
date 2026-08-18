@@ -1,0 +1,85 @@
+{
+  "created_utc": "2026-08-17T15:06:18.186514+00:00",
+  "seed": 42,
+  "versions": {
+    "python": "3.12.13",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "numpy": "2.4.6",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.13.4",
+    "scikit-learn": "1.9.0",
+    "xgboost": "2.1.4",
+    "torch": "2.13.0",
+    "shap": "0.52.0",
+    "lime": "0.2.0.1",
+    "pandas": "3.0.5",
+    "scipy": "1.18.0",
+    "imbalanced-learn": "0.14.2"
+  },
+  "config": {
+    "run": {
+      "id": null,
+      "seed": 42,
+      "seeds": [
+        42,
+        7,
+        123
+      ],
+      "output_dir": "results/",
+      "results_version": "v2"
+    },
+    "dataset": {
+      "name": "unsw_nb15",
+      "data_dir": "data/raw/unsw_nb15",
+      "normalise": "standard",
+      "balance": "none",
+      "test_size": 0.2,
+      "attack_subset_size": 500
+    },
+    "model": {
+      "name": "xgboost",
+      "class_weight": true,
+      "params": {}
+    },
+    "explainer": {
+      "name": "shap",
+      "shap_backend": "tree",
+      "lime_num_samples": 1500,
+      "cache_baseline": true
+    },
+    "attack": {
+      "strand": "fragility",
+      "method": "fgsm",
+      "gradient_source": "spsa",
+      "objective": "loss",
+      "epsilon": 0.05,
+      "steps": 1,
+      "step_size": 0.005,
+      "spsa": {
+        "q": 2,
+        "delta": 0.01
+      },
+      "target_rule": "none",
+      "enforce_prediction_preserved": false
+    },
+    "metrics": {
+      "stability": [
+        "spearman",
+        "topk_jaccard"
+      ],
+      "fidelity": [
+        "local_fidelity",
+        "deletion",
+        "insertion"
+      ],
+      "drift": [
+        "cosine",
+        "l1",
+        "l2"
+      ],
+      "topk": 10,
+      "subtract_lime_noise_floor": true,
+      "fixed_cohort": true
+    }
+  }
+}

@@ -1,0 +1,18 @@
+# Phase 9b: v1 found no candidate that met the predeclared numerical-release
+# rule. This independent 32-cell follow-up increases coalition samples while
+# retaining the same datasets, model families, attack strands, seeds, and
+# acceptance thresholds. Attack outcomes remain excluded from selection.
+output_dir: configs/kernelshap_stability_phase9b
+base: configs/kernelshap_stability_phase9b_base.yaml
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost, mlp]
+  explainer: [shap]
+  shap_backend: [kernel]
+  shap_background_size: [100]
+  shap_kernel_nsamples: [1000, 3000]
+  shap_kernel_l1_reg: [0.0001, 0.001]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42]

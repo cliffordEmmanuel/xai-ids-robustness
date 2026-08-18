@@ -12,6 +12,7 @@ import pandas as pd
 import pytest
 
 import xai_ids.datasets  # noqa: F401 - triggers loader registration
+from xai_ids.datasets.categorical import TrainOnlyCategoricalEncoder
 from xai_ids.datasets.cicids2017 import CICIDS2017Loader
 from xai_ids.datasets.unsw_nb15 import UNSWNB15Loader
 from xai_ids.registry import DATASETS
@@ -104,10 +105,10 @@ def test_unsw_nb15_loader(tmp_path):
     for dropped in ("id", "attack_cat", "label"):
         assert dropped not in raw.feature_names
 
-    # Categoricals one-hot encoded.
-    assert any(f.startswith("proto_") for f in raw.feature_names)
-    assert any(f.startswith("service_") for f in raw.feature_names)
-    assert any(f.startswith("state_") for f in raw.feature_names)
+    # Categoricals remain raw until the train-only preprocessor fits an encoder.
+    for categorical in ("proto", "service", "state"):
+        assert categorical in raw.feature_names
+    assert raw.meta["categorical_encoding"]["columns"] == ["proto", "service", "state"]
 
     # Numeric passthrough kept.
     assert "dur" in raw.feature_names and "spkts" in raw.feature_names
@@ -117,6 +118,25 @@ def test_unsw_nb15_loader(tmp_path):
     assert raw.y.tolist() == [0, 1, 0, 1]
     assert not raw.X.isna().any().any()
     assert "Exploits" in raw.meta["attack_categories"]
+
+
+def test_train_only_categorical_encoder_maps_test_only_category_to_other():
+    train = pd.DataFrame(
+        {
+            "dur": [0.1, 0.2, 0.3, 0.4],
+            "proto": ["tcp", "tcp", "udp", "udp"],
+        }
+    )
+    test = pd.DataFrame({"dur": [0.5], "proto": ["test_only"]})
+    encoder = TrainOnlyCategoricalEncoder(columns=("proto",), top_n={"proto": 2})
+
+    encoded_train = encoder.fit_transform(train)
+    encoded_test = encoder.transform(test)
+
+    assert "proto_test_only" not in encoder.output_columns_
+    assert "proto_other" in encoder.output_columns_
+    assert encoded_train.columns.tolist() == encoded_test.columns.tolist()
+    assert encoded_test.loc[0, "proto_other"] == 1
 
 
 # --------------------------------------------------------------------------- #

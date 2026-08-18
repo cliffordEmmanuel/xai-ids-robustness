@@ -4,12 +4,13 @@ The single attack framework (Phase 5) covers both strands via a pluggable
 objective and gradient source:
 
 * ``objective='loss'``        -> fragility strand (standard FGSM/PGD).
-* ``objective='attribution'`` -> tamper strand (targeted; requires an explainer).
+* ``objective='attribution'`` -> tamper strand (targeted; requires an explanation oracle).
 * ``gradient_source='spsa'``  -> zeroth-order estimation, both models (default).
 * ``gradient_source='autograd'`` -> MLP-only optional sanity check.
 
-For the tamper strand the attack calls the explainer inside its optimisation
-loop, which is why ``generate`` accepts an optional ``explainer``.
+For the tamper strand the attack calls an explanation service inside its
+optimisation loop. ``generate`` accepts restricted oracle interfaces rather than
+the raw model, explainer, or training background.
 """
 
 from __future__ import annotations
@@ -20,8 +21,7 @@ from typing import Literal
 
 import numpy as np
 
-from .explainer import Explainer
-from .model import Model
+from ..oracles import ExplanationOracle, ProbabilityOracle
 
 Objective = Literal["loss", "attribution"]
 GradientSource = Literal["spsa", "autograd"]
@@ -56,16 +56,18 @@ class Attack(ABC):
     @abstractmethod
     def generate(
         self,
-        model: Model,
+        model_oracle: ProbabilityOracle,
         X: np.ndarray,
         *,
         objective: Objective = "loss",
         gradient_source: GradientSource = "spsa",
-        explainer: Explainer | None = None,
+        explanation_oracle: ExplanationOracle | None = None,
     ) -> AttackResult:
         """Generate adversarial inputs for ``X``.
 
         Implementations must raise if ``objective='attribution'`` is requested
-        without an ``explainer``.
+        without an ``explanation_oracle``. Implementations must interact only
+        with these restricted oracle interfaces, never with a raw model or
+        explainer object.
         """
         raise NotImplementedError

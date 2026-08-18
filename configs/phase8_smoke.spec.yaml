@@ -1,0 +1,12 @@
+# Four real-data smoke cells: both strands x both explainers, small XGBoost
+# workload. Inspect outputs before launching any full grid.
+output_dir: configs/phase8_smoke
+base: configs/phase8_smoke_base.yaml
+axes:
+  dataset: [cicids2017]
+  model: [xgboost]
+  explainer: [shap, lime]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42]

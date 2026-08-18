@@ -32,6 +32,15 @@ def test_models_registered():
     assert "mlp" in MODELS
 
 
+def test_model_quality_policy_requires_attack_recall_and_f1():
+    from xai_ids.models import assess_model_quality
+
+    quality = assess_model_quality({"recall": 0.79, "f1": 0.95})
+    assert quality["comparison_eligible"] is False
+    quality = assess_model_quality({"recall": 0.80, "f1": 0.80})
+    assert quality["comparison_eligible"] is True
+
+
 @pytest.mark.parametrize("name", ["xgboost", "mlp"])
 def test_fit_predict_evaluate_saveload(tmp_path, name):
     _require(_DEP[name])
@@ -50,8 +59,23 @@ def test_fit_predict_evaluate_saveload(tmp_path, name):
     assert set(np.unique(pred).tolist()) <= {0, 1}
 
     m = evaluate_classification(model, X, y)
-    assert set(m) == {"accuracy", "precision", "recall", "f1"}
+    assert set(m) == {
+        "accuracy",
+        "precision",
+        "recall",
+        "f1",
+        "test_n_total",
+        "test_n_benign",
+        "test_n_attack",
+        "true_negative",
+        "false_positive",
+        "false_negative",
+        "true_positive",
+    }
     assert 0.0 <= m["accuracy"] <= 1.0
+    assert m["test_n_benign"] + m["test_n_attack"] == len(y)
+    assert m["true_negative"] + m["false_positive"] == m["test_n_benign"]
+    assert m["false_negative"] + m["true_positive"] == m["test_n_attack"]
 
     path = tmp_path / f"model{model.ext}"
     model.save(path)

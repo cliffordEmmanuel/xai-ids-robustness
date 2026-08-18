@@ -1,0 +1,22 @@
+{
+  "n_evaluated": 500,
+  "retention_rate": 0.846,
+  "drift_cosine": 0.5565953696562457,
+  "drift_l1": 1.1993202942028764,
+  "drift_l2": 0.36117394590599794,
+  "noise_floor_cosine": 0.4814023549762158,
+  "drift_cosine_adj": 0.07519301468002987,
+  "noise_floor_l1": 1.1557605043030947,
+  "drift_l1_adj": 0.04355978989978171,
+  "noise_floor_l2": 0.3483121316194542,
+  "drift_l2_adj": 0.01286181428654376,
+  "spearman": 0.23097548120166958,
+  "topk_jaccard": 0.18466478035208683,
+  "fidelity_baseline_deletion": 0.7743606826192455,
+  "fidelity_adversarial_deletion": 0.7966158805709135,
+  "fidelity_baseline_insertion": 0.9160821845656948,
+  "fidelity_adversarial_insertion": 0.8606810914842706,
+  "model_queries": 3000,
+  "explainer_calls": 0,
+  "n_perturbed": 187
+}

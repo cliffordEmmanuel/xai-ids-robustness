@@ -1,0 +1,18 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "e7f4e9c41eaabe3b3b6a1f32a729890c2eda794a09a042c92c6793de20fa175e"
+    },
+    "metrics.json": {
+      "sha256": "75fe6918bf0bbd2ecf9ba9a42d35e5213818a8a953fddf717a890415665cd596"
+    },
+    "provenance.json": {
+      "sha256": "1304773323ed238eba4234b178891843c3924e3f5aa20b51a4463d574e794ed2"
+    }
+  },
+  "created_utc": "2026-08-17T15:06:39.783090+00:00",
+  "experiment_id": "unsw-xgboost-shap-frag-pgd-e0.05-s123",
+  "kind": "experiment-run",
+  "results_version": "v2",
+  "schema_version": "2.0"
+}

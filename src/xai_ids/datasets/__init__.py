@@ -7,6 +7,7 @@ resolve after import.
 
 from ..registry import DATASETS
 from .base import RawData, RawLoader
+from .categorical import TrainOnlyCategoricalEncoder
 from .cicids2017 import CICIDS2017Loader
 from .preprocess import build_dataset, preprocess
 from .store import load_bundle, save_bundle
@@ -16,6 +17,7 @@ __all__ = [
     "DATASETS",
     "RawData",
     "RawLoader",
+    "TrainOnlyCategoricalEncoder",
     "CICIDS2017Loader",
     "UNSWNB15Loader",
     "preprocess",

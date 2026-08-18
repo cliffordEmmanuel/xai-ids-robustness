@@ -30,8 +30,6 @@ def test_databundle_validation() -> None:
         y_train=np.zeros(4),
         X_test=np.zeros((2, 3)),
         y_test=np.zeros(2),
-        X_attack=np.zeros((2, 3)),
-        attack_indices=np.arange(2),
         feature_names=["a", "b", "c"],
     )
     assert ok.n_features == 3
@@ -42,8 +40,6 @@ def test_databundle_validation() -> None:
             y_train=np.zeros(4),
             X_test=np.zeros((2, 5)),  # mismatched feature count
             y_test=np.zeros(2),
-            X_attack=np.zeros((2, 5)),
-            attack_indices=np.arange(2),
             feature_names=["a", "b", "c"],
         )
 

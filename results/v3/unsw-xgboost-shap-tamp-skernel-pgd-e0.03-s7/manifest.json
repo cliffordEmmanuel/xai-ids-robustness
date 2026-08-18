@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "0e0be34f30fa5f4bc0d2fd9fe9943d8599491a0b9800b886a3e7ef31985d1fb5"
+    },
+    "fidelity.json": {
+      "sha256": "e257a4deb3d13230829c091da5be1cb734f3a514ba8c39d1f677bb0e91b2cea8"
+    },
+    "metrics.json": {
+      "sha256": "c26aa69ff80bc20db676d15922552513865e779d5806471ccd33ed832dc94d13"
+    },
+    "noise_floor.npz": {
+      "sha256": "1c599dc94289d562d77996d703ec78014e85553c4e7df2ad1f5185084491e66d"
+    },
+    "per_flow.csv": {
+      "sha256": "a71aafedc359f6645b4601f3acd9a656b66f56cc15cb511dc4266a76a3314b66"
+    },
+    "provenance.json": {
+      "sha256": "f51ab218400075c1037f8b0743590f5bdc15fe644e937e9be741df1d5c00c2c4"
+    }
+  },
+  "created_utc": "2026-08-18T09:26:27.745372+00:00",
+  "experiment_id": "unsw-xgboost-shap-tamp-skernel-pgd-e0.03-s7",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

@@ -1,0 +1,97 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 500,
+    "n_flipped": 0,
+    "retention_rate": 1.0,
+    "n_frozen_due_prediction_flip": 500,
+    "model_queries": 1531,
+    "explanation_queries": 37,
+    "n_perturbed": 10,
+    "n_explainer_convergence_warnings": 0
+  },
+  "model_quality": {
+    "accuracy": 0.9989611157258868,
+    "precision": 0.9938083697836624,
+    "recall": 0.9993313322832774,
+    "f1": 0.9965621990071868,
+    "test_n_total": 446633,
+    "test_n_benign": 379335,
+    "test_n_attack": 67298,
+    "true_negative": 378916,
+    "false_positive": 419,
+    "false_negative": 45,
+    "true_positive": 67253,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 1531,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": {
+      "access": "explanation_oracle",
+      "queries": 37,
+      "budget": 250,
+      "query_unit": "logical explanation-service request per batch",
+      "internal_model_queries": "not_observed_at_oracle_boundary"
+    }
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 0,
+    "convergence_warning_messages": []
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 1.0,
+    "drift_cosine": 0.009919934906065464,
+    "drift_l1": 0.24624069035053253,
+    "drift_l2": 0.08032640069723129,
+    "spearman": 0.9907480072212193,
+    "topk_jaccard": 0.9897728937728939,
+    "fidelity_baseline_deletion": 0.02538123812186954,
+    "fidelity_adversarial_deletion": 0.02503695014087121,
+    "fidelity_baseline_insertion": 0.8630466054266185,
+    "fidelity_adversarial_insertion": 0.8563548104228216,
+    "tamper_success_topk_displacement": 0.0,
+    "target_baseline_abs_attribution": 5.704717277765274,
+    "target_adversarial_abs_attribution": 5.685557853937149,
+    "target_relative_attribution_reduction": 0.006829596580716879,
+    "target_baseline_rank": 1.0,
+    "target_adversarial_rank": 1.032,
+    "target_rank_deterioration": 0.032,
+    "target_in_topk_baseline": 1.0,
+    "target_in_topk_adversarial": 1.0
+  },
+  "prediction_preserved": {
+    "n_evaluated": 500,
+    "retention_rate": 1.0,
+    "drift_cosine": 0.009919934906065464,
+    "drift_l1": 0.24624069035053253,
+    "drift_l2": 0.08032640069723129,
+    "spearman": 0.9907480072212193,
+    "topk_jaccard": 0.9897728937728939,
+    "fidelity_baseline_deletion": 0.02538123812186954,
+    "fidelity_adversarial_deletion": 0.02503695014087121,
+    "fidelity_baseline_insertion": 0.8630466054266185,
+    "fidelity_adversarial_insertion": 0.8563548104228216,
+    "tamper_success_topk_displacement": 0.0,
+    "target_baseline_abs_attribution": 5.704717277765274,
+    "target_adversarial_abs_attribution": 5.685557853937149,
+    "target_relative_attribution_reduction": 0.006829596580716879,
+    "target_baseline_rank": 1.0,
+    "target_adversarial_rank": 1.032,
+    "target_rank_deterioration": 0.032,
+    "target_in_topk_baseline": 1.0,
+    "target_in_topk_adversarial": 1.0
+  }
+}

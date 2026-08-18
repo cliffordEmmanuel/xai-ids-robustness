@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "a693d4fe5450356113d904be202ee8bb1be20a786630c135e0029aa55b63a5a4"
+    },
+    "fidelity.json": {
+      "sha256": "ba099b78852f9c48547b9003f40ad722f08baa0c765d1de3fa17618553efbc4a"
+    },
+    "metrics.json": {
+      "sha256": "84cc00ad4b12939da8e5dcce31c44a28baf93ee455422653a6626d2bb48525b9"
+    },
+    "noise_floor.npz": {
+      "sha256": "1c599dc94289d562d77996d703ec78014e85553c4e7df2ad1f5185084491e66d"
+    },
+    "per_flow.csv": {
+      "sha256": "915c47293e286ed29813d871c90edcc52bef9544b41bf509e32bc832ef0f4df4"
+    },
+    "provenance.json": {
+      "sha256": "607fde3d80d0f6023d8f1bab640be539ad15ffd1da7d187459aa69b08e775252"
+    }
+  },
+  "created_utc": "2026-08-18T06:19:27.126764+00:00",
+  "experiment_id": "cicids-xgboost-shap-tamp-pgd-e0.03-s42",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

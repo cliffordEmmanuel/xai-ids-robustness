@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 0,
+    "n_flipped": 500,
+    "retention_rate": 0.0,
+    "n_frozen_due_prediction_flip": 0,
+    "model_queries": 101000,
+    "explanation_queries": 0,
+    "n_perturbed": 500,
+    "n_explainer_convergence_warnings": 0
+  },
+  "model_quality": {
+    "accuracy": 0.9989543988017007,
+    "precision": 0.993851883599604,
+    "recall": 0.9992421765877143,
+    "f1": 0.9965397411103949,
+    "test_n_total": 446633,
+    "test_n_benign": 379335,
+    "test_n_attack": 67298,
+    "true_negative": 378919,
+    "false_positive": 416,
+    "false_negative": 51,
+    "true_positive": 67247,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 101000,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": null
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 0,
+    "convergence_warning_messages": []
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 0.0,
+    "drift_cosine": 0.8897843956947327,
+    "drift_l1": 23.00176239013672,
+    "drift_l2": 9.730355262756348,
+    "spearman": 0.3527200666574087,
+    "topk_jaccard": 0.39112028167910523,
+    "fidelity_baseline_deletion": 0.023822071144973284,
+    "fidelity_adversarial_deletion": 0.0016014130048915831,
+    "fidelity_baseline_insertion": 0.8818939346347775,
+    "fidelity_adversarial_insertion": 0.003429925149356151
+  },
+  "prediction_preserved": {
+    "n_evaluated": 0,
+    "retention_rate": 0.0
+  }
+}

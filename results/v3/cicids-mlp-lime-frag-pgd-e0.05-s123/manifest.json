@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "4e86a4a05340adf1f38d8f747695266929b96489e3c13f8f0d4d593326377749"
+    },
+    "fidelity.json": {
+      "sha256": "ba099b78852f9c48547b9003f40ad722f08baa0c765d1de3fa17618553efbc4a"
+    },
+    "metrics.json": {
+      "sha256": "42e9147985f167480b4b1409f3737ade50b68d4295a2a546f8de326ec10d1710"
+    },
+    "noise_floor.npz": {
+      "sha256": "7387229371982312d49bca95538ac4c9106a5a48252f3428cfe4e743fe5fdd6a"
+    },
+    "per_flow.csv": {
+      "sha256": "03d51f7930ea6b635010477909b95cb786952afc8243c4fdf064ed066e30b437"
+    },
+    "provenance.json": {
+      "sha256": "07868f3b0dc733a7934cba204a94b7be0d0970111c7ab034cb5f44f311518020"
+    }
+  },
+  "created_utc": "2026-08-18T05:45:27.993110+00:00",
+  "experiment_id": "cicids-mlp-lime-frag-pgd-e0.05-s123",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

@@ -5,9 +5,9 @@ Reads the pre-partitioned ``UNSW_NB15_training-set.csv`` / ``testing-set.csv``
 
 * drop the ``id`` row index and the ``attack_cat`` column (kept only in meta for
   later stratification);
-* one-hot encode the categorical fields (``proto``, ``service``, ``state``),
-  collapsing rare/high-cardinality values (notably ``proto``) into ``other`` so
-  the encoding does not explode into hundreds of columns;
+* retain categorical fields (``proto``, ``service``, ``state``) until the shared
+  preprocessor fits their rare-category grouping and one-hot encoding on the
+  training split only;
 * coerce remaining columns to numeric, handle NaN/Inf, drop duplicates.
 
 Reference: Moustafa & Slay, MilCIS 2015 (and companion papers).
@@ -25,7 +25,6 @@ from .base import (
     RawLoader,
     coerce_numeric,
     drop_columns_ci,
-    group_rare_categories,
     replace_inf,
     strip_column_names,
 )
@@ -49,9 +48,12 @@ class UNSWNB15Loader(RawLoader):
         super().__init__(data_dir)
 
     def load_raw(self) -> RawData:
-        files = self._find_files(
-            ["*training-set.csv", "*testing-set.csv", "UNSW_NB15_*.csv", "*.csv"]
+        # Prefer the pre-partitioned train/test CSVs; only fall back to other CSVs
+        # if they are absent (avoid unioning the raw headerless UNSW_NB15_1..4.csv).
+        partition = sorted(self.data_dir.glob("*training-set.csv")) + sorted(
+            self.data_dir.glob("*testing-set.csv")
         )
+        files = partition if partition else self._find_files(["*.csv"])
         frames = [pd.read_csv(f, low_memory=False) for f in files]
         df = pd.concat(frames, ignore_index=True)
         df = strip_column_names(df)
@@ -72,21 +74,20 @@ class UNSWNB15Loader(RawLoader):
         # Remove label, attack_cat, and id from the feature frame.
         df = drop_columns_ci(df, DROP_COLUMNS | {LABEL_COLUMN, ATTACK_CAT_COLUMN})
 
-        # One-hot encode categoricals with rare-category grouping.
+        # Keep categoricals raw. Their grouping/encoding is fitted after the
+        # train/test split by the shared preprocessor to prevent test leakage.
         caps = {"proto": PROTO_TOP_N, "service": SERVICE_TOP_N, "state": STATE_TOP_N}
         present_cats = [c for c in CATEGORICAL_COLUMNS if c in df.columns]
-        for c in present_cats:
-            df[c] = group_rare_categories(df[c], top_n=caps[c])
-        if present_cats:
-            df = pd.get_dummies(df, columns=present_cats, prefix=present_cats, dtype=np.int64)
 
-        # Numeric coercion + inf/NaN handling on the remaining columns.
-        df = coerce_numeric(df)
+        # Numeric coercion + inf/NaN handling on numeric fields only. Missing
+        # categoricals are mapped to ``other`` by the fitted transformer later.
+        df = coerce_numeric(df, exclude=set(present_cats))
         df = replace_inf(df)
 
         combined = df.copy()
         combined["__y__"] = y.to_numpy()
-        mask = ~combined.isna().any(axis=1)
+        numeric_columns = [c for c in combined.columns if c not in present_cats]
+        mask = ~combined[numeric_columns].isna().any(axis=1)
         combined = combined.loc[mask].reset_index(drop=True)
         combined = combined.drop_duplicates().reset_index(drop=True)
         y_final = combined.pop("__y__").astype(np.int64).to_numpy()
@@ -96,7 +97,12 @@ class UNSWNB15Loader(RawLoader):
             "source": "UNSW-NB15 (UNSW Canberra)",
             "n_files": len(files),
             "attack_categories": attack_cats,
-            "encoded_categoricals": present_cats,
+            "categorical_columns": present_cats,
+            "categorical_encoding": {
+                "columns": present_cats,
+                "top_n": {name: caps[name] for name in present_cats},
+                "other_label": "other",
+            },
             "positive_label": "attack",
         }
         return RawData(

@@ -86,6 +86,7 @@ Low separability, which is why detectors struggle here.
 SHAP/LIME reveal *which* of these features drove an "attack" verdict — e.g.
 `Flow Packets/s` for a DoS flow. The tamper attack's top-1 suppression is precisely
 an attempt to make the explanation **stop pointing at that decisive feature** while
-the flow is still classified as an attack. The concrete threat: an analyst sees a
-flow flagged malicious, but the explanation no longer highlights the rate spike that
-actually triggered it — misdirecting incident response.
+the flow is still classified as an attack. Its primary success outcome is that the
+original feature leaves the configured top-*k* explanation set. The concrete threat:
+an analyst sees a flow flagged malicious, but the explanation no longer highlights
+the rate spike that actually triggered it — misdirecting incident response.

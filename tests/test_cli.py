@@ -31,11 +31,28 @@ def test_list_all(capsys):
         assert kind in out
 
 
-def test_run_is_stubbed():
-    with pytest.raises(SystemExit):
-        main(["run", str(CONFIGS / "tamper_example.yaml")])
-
-
 def test_no_command_errors():
     with pytest.raises(SystemExit):
         main([])
+
+
+def test_new_commands_parse():
+    from xai_ids.cli import build_parser
+
+    for cmd in (
+        "run",
+        "train",
+        "explain",
+        "gen-grid",
+        "grid",
+        "validate-results",
+        "analyze-results",
+    ):
+        args = build_parser().parse_args([cmd, "x.yaml"])
+        assert args.command == cmd
+    args = build_parser().parse_args(["sweep", "a.yaml", "b.yaml"])
+    assert args.configs == ["a.yaml", "b.yaml"]
+    args = build_parser().parse_args(
+        ["validate-results", "results/v2", "--spec", "a.yaml", "--spec", "b.yaml"]
+    )
+    assert args.specs == ["a.yaml", "b.yaml"]

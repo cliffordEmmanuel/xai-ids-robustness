@@ -20,12 +20,23 @@ htmlcov/
 data/
 results/*
 !results/.gitkeep
+# The compact, versioned final-result manifest is intentionally tracked. Large
+# experiment artifacts under this directory remain ignored and are archived
+# separately with checksums.
+!results/v2/
+!results/v2/manifest.json
+!results/v3/
+!results/v3/manifest.json
 models/*
 !models/.gitkeep
 *.pkl
 *.joblib
 *.pt
 *.npz
+
+# Generated grid configs (regenerable from configs/*.spec.yaml)
+configs/gridA/
+configs/gridB/
 
 # Notebooks
 .ipynb_checkpoints/

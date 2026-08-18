@@ -1,5 +1,6 @@
 """Abstract component interfaces for the benchmarking framework."""
 
+from ..oracles import ExplanationOracle, ProbabilityOracle, QueryBudgetExceeded
 from .attack import Attack, AttackResult, GradientSource, Objective
 from .dataset import DataBundle, Dataset
 from .explainer import Explainer
@@ -16,4 +17,7 @@ __all__ = [
     "Explainer",
     "Metric",
     "Model",
+    "ExplanationOracle",
+    "ProbabilityOracle",
+    "QueryBudgetExceeded",
 ]

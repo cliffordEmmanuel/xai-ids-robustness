@@ -38,8 +38,10 @@ SHAP dispatches on `backend` (from `explainer.shap_backend` in config):
 
 - **`tree` (XGBoost):** `shap.TreeExplainer(model.native)` — exact and fast, but
   needs the underlying estimator, exposed via the model's `native` property.
-- **`kernel` (MLP):** `shap.KernelExplainer(predict_proba_positive, background)` —
-  model-agnostic approximation using only `predict_proba` + a background sample.
+- **`kernel` (model-agnostic):** `shap.KernelExplainer(predict_proba_positive,
+  background)` — an approximation using only `predict_proba` + a background
+  sample. It is the normal MLP backend and, in the focused Phase-7 control, is
+  also run on XGBoost to separate backend from architecture.
 
 Key implementation details:
 
@@ -71,7 +73,7 @@ needs `predict_proba`.
 
 | | XGBoost | MLP | needs |
 |---|---|---|---|
-| SHAP | TreeSHAP — exact, deterministic | KernelSHAP — approximate, stochastic | tree: `model.native`; kernel: `predict_proba` + background |
+| SHAP | TreeSHAP — exact, deterministic; KernelSHAP control available | KernelSHAP — approximate, stochastic | tree: `model.native`; kernel: `predict_proba` + background |
 | LIME | same (black-box) | same (black-box) | `predict_proba` + background |
 
 ## The `explain` command
@@ -97,6 +99,8 @@ These baseline attributions are what the tamper strand diffs against.
 explainer:
   name: shap            # {shap, lime}
   shap_backend: tree    # tree (XGBoost) | kernel (MLP); validated: tree ⇒ xgboost
+  shap_background_size: 100
+  shap_kernel_nsamples: 100
   lime_num_samples: 1500
   cache_baseline: true
 ```
@@ -125,10 +129,13 @@ See `explainer_choice.md` for the full rationale narrative.
   (currently 2.1.4).
 - **SHAP is exact for XGBoost but approximate for the MLP** (TreeSHAP vs
   KernelSHAP). A cross-architecture SHAP difference could partly reflect
-  exact-vs-approximate estimation, not architecture — mitigate with a high
-  KernelSHAP sample count and by reporting the noise floor.
-- **Stochasticity.** TreeSHAP is deterministic; KernelSHAP and LIME are not — hence
-  the noise-floor subtraction (Phase 6) applies to them.
+  exact-vs-approximate estimation, not architecture. The Phase-7
+  KernelSHAP-on-XGBoost control fixes the backend, background size, and kernel
+  sample count before interpreting an architecture contrast.
+- **Stochasticity.** TreeSHAP is deterministic; KernelSHAP and LIME are not.
+  Revised LIME runs therefore report repeated fresh-seed benign-drift and
+  attack-minus-noise distributions, rather than subtracting and clamping one
+  noise-floor estimate.
 - **Cost.** TreeSHAP is ~free; KernelSHAP and LIME make many `predict_proba` calls
   per instance, which is what makes the MLP-SHAP and all-LIME tamper cells the
   expensive ones.

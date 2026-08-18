@@ -1,0 +1,22 @@
+# Grid A — fragility (RQ1-3), broad and cheap.
+# 2 datasets x 2 models x 2 explainers x {fgsm,pgd} x 3 epsilons x 3 seeds = 144 experiments.
+# Trim axes (e.g. drop fgsm, fewer seeds) if compute is tight — LIME cells are the slow ones.
+output_dir: configs/gridA
+base: configs/tamper_example.yaml
+# Initial v4 KernelSHAP release profile. Retain it only if Phase 9 calibration
+# selects it; see docs/kernelshap_stability.md before running this grid.
+kernel_shap:
+  shap_kernel_l1_reg: 0.0001
+  shap_kernel_stability_repeats: 3
+  shap_kernel_stability_seeds: [2003, 2011, 2017]
+  shap_kernel_additivity_tolerance: 0.000001
+  shap_kernel_repeat_cosine_drift_tolerance: 0.05
+  require_shap_kernel_stability: true
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost, mlp]
+  explainer: [shap, lime]
+  strand: [fragility]
+  method: [fgsm, pgd]
+  epsilon: [0.01, 0.03, 0.05]
+  seed: [42, 7, 123]

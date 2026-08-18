@@ -1,0 +1,76 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 498,
+    "n_flipped": 2,
+    "retention_rate": 0.996,
+    "n_frozen_due_prediction_flip": 0,
+    "model_queries": 3000,
+    "explanation_queries": 0,
+    "n_perturbed": 486,
+    "n_explainer_convergence_warnings": 2
+  },
+  "model_quality": {
+    "accuracy": 0.9004542504866969,
+    "precision": 0.8797164745471469,
+    "recall": 0.8985009140767825,
+    "f1": 0.8890094783300774,
+    "test_n_total": 30820,
+    "test_n_benign": 17145,
+    "test_n_attack": 13675,
+    "true_negative": 15465,
+    "false_positive": 1680,
+    "false_negative": 1388,
+    "true_positive": 12287,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 3000,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": null
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 2,
+    "convergence_warning_messages": [
+      "Regressors in active set degenerate. Dropping a regressor, after 1 iterations, i.e. alpha=2.688e-02, with an active set of 1 regressors, and the smallest cholesky pivot element being 7.300e-08. Reduce max_iter or increase eps parameters.",
+      "Regressors in active set degenerate. Dropping a regressor, after 8 iterations, i.e. alpha=2.276e-03, with an active set of 8 regressors, and the smallest cholesky pivot element being 2.220e-16. Reduce max_iter or increase eps parameters."
+    ]
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 0.996,
+    "drift_cosine": 0.18225953014608534,
+    "drift_l1": 0.5339215772903856,
+    "drift_l2": 0.16425255198572317,
+    "spearman": 0.3630382581942369,
+    "topk_jaccard": 0.25681731478016306,
+    "fidelity_baseline_deletion": 0.5760339498519899,
+    "fidelity_adversarial_deletion": 0.5834636042515438,
+    "fidelity_baseline_insertion": 0.9417724623566581,
+    "fidelity_adversarial_insertion": 0.9384677282401493
+  },
+  "prediction_preserved": {
+    "n_evaluated": 498,
+    "retention_rate": 0.996,
+    "drift_cosine": 0.18153606140668638,
+    "drift_l1": 0.532568951236877,
+    "drift_l2": 0.16397312447973791,
+    "spearman": 0.3641487498740098,
+    "topk_jaccard": 0.2574024802567456,
+    "fidelity_baseline_deletion": 0.5761727633930389,
+    "fidelity_adversarial_deletion": 0.5830782375165395,
+    "fidelity_baseline_insertion": 0.942168320218722,
+    "fidelity_adversarial_insertion": 0.9392124783425103
+  }
+}

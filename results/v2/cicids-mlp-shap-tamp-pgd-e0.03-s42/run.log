@@ -1,0 +1,20 @@
+2026-08-17 12:47:43,538 | INFO    | xai_ids | run dir: results/v2/cicids-mlp-shap-tamp-pgd-e0.03-s42
+2026-08-17 12:47:43,538 | INFO    | xai_ids | loading + preprocessing dataset 'cicids2017' ...
+2026-08-17 12:48:05,414 | INFO    | xai_ids | training mlp (class_weight=True) ...
+2026-08-17 12:48:12,712 | INFO    | xai_ids |   epoch 2/20 loss=0.0771
+2026-08-17 12:48:19,376 | INFO    | xai_ids |   epoch 4/20 loss=0.0553
+2026-08-17 12:48:26,116 | INFO    | xai_ids |   epoch 6/20 loss=0.0481
+2026-08-17 12:48:32,896 | INFO    | xai_ids |   epoch 8/20 loss=0.0445
+2026-08-17 12:48:39,530 | INFO    | xai_ids |   epoch 10/20 loss=0.0431
+2026-08-17 12:48:46,236 | INFO    | xai_ids |   epoch 12/20 loss=0.0413
+2026-08-17 12:48:52,808 | INFO    | xai_ids |   epoch 14/20 loss=0.0399
+2026-08-17 12:48:59,406 | INFO    | xai_ids |   epoch 16/20 loss=0.0389
+2026-08-17 12:49:06,028 | INFO    | xai_ids |   epoch 18/20 loss=0.0390
+2026-08-17 12:49:12,877 | INFO    | xai_ids |   epoch 20/20 loss=0.0379
+2026-08-17 12:49:13,010 | INFO    | xai_ids | model metrics: {'accuracy': 0.9920986581824451, 'precision': 0.9550962732475985, 'recall': 0.9943088947665607, 'f1': 0.9743081996811276}
+2026-08-17 12:49:13,040 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-17 12:49:13,040 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-17 12:49:14,712 | INFO    | xai_ids | attack: pgd strand=tamper objective=attribution eps=0.03 steps=50
+2026-08-17 12:53:53,830 | INFO    | xai_ids | computing metrics ...
+2026-08-17 12:53:55,495 | INFO    | xai_ids | row -> results/v2/results.csv | retention=1.000
+2026-08-17 12:53:55,495 | INFO    | xai_ids | [sweep 8/24] cicids-mlp-shap-tamp-pgd-e0.03-s7

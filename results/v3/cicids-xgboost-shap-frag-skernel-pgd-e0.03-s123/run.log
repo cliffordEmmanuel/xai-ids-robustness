@@ -1,0 +1,9 @@
+2026-08-18 08:31:24,777 | INFO    | xai_ids | run dir: results/v3/cicids-xgboost-shap-frag-skernel-pgd-e0.03-s123
+2026-08-18 08:31:24,777 | INFO    | xai_ids | loading + preprocessing dataset 'cicids2017' ...
+2026-08-18 08:31:45,027 | INFO    | xai_ids | loading cached model results/v3/cicids-xgboost-s123/model.ubj
+2026-08-18 08:31:48,296 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 08:31:48,296 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-18 08:31:58,587 | INFO    | xai_ids | attack: pgd strand=fragility objective=loss eps=0.03 steps=50
+2026-08-18 08:32:08,776 | INFO    | xai_ids | computing metrics ...
+2026-08-18 08:32:09,173 | INFO    | xai_ids | row -> results/v3/results.csv | retention=0.000
+2026-08-18 08:32:09,173 | INFO    | xai_ids | [sweep 4/6] unsw-xgboost-shap-frag-skernel-pgd-e0.03-s42

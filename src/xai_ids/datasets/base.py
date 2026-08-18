@@ -1,9 +1,10 @@
 """Base types and helpers for dataset loaders.
 
 A *loader* handles the dataset-specific work: locating the raw files, reading
-them, and cleaning them into a consistent, model-ready form (binary labels,
-leaky identifier columns removed, NaN/Inf handled, categoricals encoded,
-duplicates dropped). It returns a :class:`RawData` bundle.
+them, and cleaning them into a consistent form (binary labels, leaky identifier
+columns removed, NaN/Inf handled, duplicates dropped). It returns a
+:class:`RawData` bundle. Categorical encoding is intentionally deferred until
+after the train/test split so its learned vocabulary cannot leak test data.
 
 The shared, dataset-agnostic steps that come *after* this — train/test split,
 scaler fitting, train-only balancing, freezing the test set, carving the attack
@@ -25,7 +26,7 @@ import pandas as pd
 
 @dataclass
 class RawData:
-    """Cleaned, model-ready features and binary labels for one dataset."""
+    """Cleaned features and binary labels before train-only transformations."""
 
     X: pd.DataFrame
     y: np.ndarray

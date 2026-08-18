@@ -1,0 +1,13 @@
+# Eight strict real-data smoke cells: both datasets, both model families, and
+# both attack strands. This is a release gate, not final thesis evidence.
+output_dir: configs/phase9_kernelshap_smoke
+base: configs/phase9_kernelshap_smoke_base.yaml
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost, mlp]
+  explainer: [shap]
+  shap_backend: [kernel]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42]

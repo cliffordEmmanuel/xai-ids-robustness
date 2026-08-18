@@ -1,0 +1,18 @@
+# 32-cell Phase 9 calibration, deliberately separate from final evidence.
+# 2 datasets x 2 models x 2 strands x 2 KernelSHAP sample budgets x
+# 2 explicit l1 settings. Selection is based only on the generated numerical
+# diagnostics, never on attack success or explanation-drift outcomes.
+output_dir: configs/kernelshap_stability_calibration
+base: configs/kernelshap_stability_base.yaml
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost, mlp]
+  explainer: [shap]
+  shap_backend: [kernel]
+  shap_background_size: [100]
+  shap_kernel_nsamples: [100, 300]
+  shap_kernel_l1_reg: [0.000001, 0.0001]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42]

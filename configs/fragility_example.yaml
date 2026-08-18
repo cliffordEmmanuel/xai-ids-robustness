@@ -18,8 +18,17 @@ model:
 explainer:
   name: shap
   shap_backend: kernel      # MLP -> kernel SHAP
+  shap_background_size: 100
+  shap_kernel_nsamples: 100
   lime_num_samples: 1500
   cache_baseline: true
+
+threat_model:
+  model_access: probability_query
+  explanation_access: oracle
+  query_budget:
+    model_queries: 125000       # individual input probability vectors per attack
+    explanation_queries: 250    # logical explanation-service requests per attack
 
 attack:
   strand: fragility
@@ -33,6 +42,7 @@ attack:
     q: 2
     delta: 0.01
   target_rule: none
+  target_objective: suppression  # unused for the loss-based fragility strand
   enforce_prediction_preserved: false   # fragility: run bounded, filter preserved post-hoc
 
 metrics:
@@ -40,5 +50,6 @@ metrics:
   fidelity: [local_fidelity, deletion, insertion]
   drift: [cosine, l1, l2]
   topk: 10
-  subtract_lime_noise_floor: true
-  fixed_cohort: true
+  measure_lime_noise_floor: true
+  noise_floor_repeats: 10
+  noise_floor_seeds: [1009, 1013, 1019, 1021, 1031, 1033, 1039, 1049, 1051, 1061]

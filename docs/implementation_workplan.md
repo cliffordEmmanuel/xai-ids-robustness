@@ -4,9 +4,9 @@
 **Companion:** `docs/attack_strategy.md` (attack design rationale).
 **Change in one line:** the framework now runs **two attack strands** — a broad
 *fragility* study (standard FGSM/PGD) and a bounded *tamper-resistance* study
-(targeted SPSA attack) — under a single black-box, prediction-preserving threat
-model. Everything below is organised so it can be implemented against a settled
-spec.
+(targeted SPSA attack) — under a probability-query black-box with an explicit
+explanation oracle. Prediction preservation is enforced only for tamper.
+Everything below is organised so it can be implemented against a settled spec.
 
 ---
 
@@ -16,9 +16,9 @@ spec.
 |---|----------|--------------------|
 | 1 | **Attacks are black-box via SPSA** (zeroth-order), not surrogate transfer or autograd. | One uniform attack on both models; XGBoost's non-differentiability is no longer a special case. |
 | 2 | **Two strands.** Fragility (loss objective) + Tamper resistance (attribution objective). | New config fields, a second runner path, and split reporting in metrics/analysis. |
-| 3 | **Targeted attack** optimises the explanation itself, prediction held fixed. | `Attack` depends on `Explainer`; constraint enforced in-loop. |
+| 3 | **Targeted attack** optimises the explanation itself, prediction held fixed. | `Attack` uses a restricted explanation oracle; constraint enforced in-loop. |
 | 4 | **Tamper study = 8 cells** (2 datasets × 2 models × 2 explainers). | Two execution grids instead of one. |
-| 5 | **Safeguards**: fixed cohort, objective/eval separation, LIME noise floor. | New metric-engine logic. |
+| 5 | **Safeguards**: explicit cohorts, objective/eval separation, repeated LIME noise distribution. | New metric-engine logic. |
 
 The research **objective is unchanged**: evaluate the tamper resistance of SHAP
 and LIME in ML-based IDS. The two strands map to the thesis as:
@@ -72,8 +72,17 @@ model:
 explainer:
   name: shap               # {shap, lime}
   shap_backend: tree       # tree (XGBoost) | kernel (MLP/agnostic)
+  shap_background_size: 100
+  shap_kernel_nsamples: 100
   lime_num_samples: 1500   # capped for in-loop cost
   cache_baseline: true
+
+threat_model:
+  model_access: probability_query
+  explanation_access: oracle
+  query_budget:
+    model_queries: 125000       # individual input probability vectors / attack
+    explanation_queries: 250    # logical explanation-service requests / attack
 
 attack:
   strand: fragility        # {fragility, tamper}
@@ -87,6 +96,7 @@ attack:
     q: 2                   # perturbation vectors averaged per step (antithetic)
     delta: 0.01            # SPSA finite-difference magnitude
   target_rule: top1_suppress   # tamper only: suppress top-1 baseline feature
+  target_objective: suppression # suppression (primary) | rank_margin (sensitivity)
   enforce_prediction_preserved: true
 
 metrics:
@@ -94,8 +104,9 @@ metrics:
   fidelity:  [local_fidelity, deletion, insertion]  # need model access
   drift:     [cosine, l1, l2]
   topk: 10                 # fixed (or fraction) for cross-dataset comparability
-  subtract_lime_noise_floor: true
-  fixed_cohort: true       # samples preserved across ALL epsilon
+  measure_lime_noise_floor: true
+  noise_floor_repeats: 10
+  noise_floor_seeds: [1009, 1013, 1019, 1021, 1031, 1033, 1039, 1049, 1051, 1061]
 ```
 
 **Cross-dataset note:** `epsilon` is comparable *within* a dataset only. Report
@@ -120,7 +131,7 @@ the delta is explicit.
   - `Dataset.load()`
   - `Model.fit() / predict() / predict_proba() / save() / load()`
   - `Explainer.explain(model, X) -> np.ndarray`
-  - `Attack.generate(model, X, *, objective, gradient_source, explainer=None)`
+  - `Attack.generate(model_oracle, X, *, objective, gradient_source, explanation_oracle=None)`
   - `Metric.compute(baseline, adversarial, *, model=None)`
 - Reproducibility: fixed seeds (incl. SPSA/attack seeds), logging, run IDs,
   timestamped outputs, version pinning.
@@ -128,9 +139,9 @@ the delta is explicit.
 **Deliverable:** benchmarking skeleton with the two-strand-aware interfaces.
 
 **Changed vs v1:** `Attack.generate` now takes a pluggable `objective`, a
-`gradient_source`, and an optional `explainer` (needed for the tamper strand).
-`Metric.compute` gains optional `model` access (for fidelity). These two signature
-changes are the core architectural difference — get them right here.
+`gradient_source`, and restricted probability/explanation oracle interfaces.
+`Metric.compute` gains optional `model` access (for fidelity). These boundaries
+make the threat model enforceable rather than merely descriptive.
 
 ---
 
@@ -181,8 +192,8 @@ be wired as an optional MLP-only sanity check.
 - **Performance for in-loop use:** cap LIME `num_samples`, fix LIME seed.
 - **Target selector:** derive the top-1 attributed feature per sample (tamper
   target rule).
-- **LIME noise-floor utility:** repeat LIME N times on the *unperturbed* input to
-  estimate intrinsic variance.
+- **LIME noise distribution:** fresh-seed LIME instances on the *unperturbed*
+  input; retain per-flow benign drift samples and uncertainty intervals.
 
 **Deliverable:** reusable explanation engine + target selector + noise-floor tool.
 
@@ -201,7 +212,7 @@ the target selector and the noise-floor estimator, and must be fast.
 - **Unified PGD** with pluggable `gradient_source` (`spsa` default, `autograd`
   MLP-only); **FGSM** = single-step PGD.
 - **Objective = `loss`** (fragility strand): standard loss-maximising attack;
-  retain prediction-preserved samples afterwards.
+  report both all attacked flows and the prediction-preserved subset afterwards.
 - **Objective = `attribution`** (tamper strand): targeted suppression of the
   top-1 baseline feature; **prediction preservation enforced in-loop** via
   penalty/projection; the attack **calls the Explainer** each step.
@@ -229,15 +240,17 @@ Effectively ~2× the v1 scope for this phase.
   (tamper).
 - **Objective/evaluation separation:** exclude the attack's objective metric from
   the reported tamper metrics (no teaching-to-the-test).
-- **Fixed evaluation cohort:** samples prediction-preserved across *all* ε;
-  report **retention rate** separately.
-- **Subtract the LIME noise floor** from measured drift.
+- **Explicit evaluation cohorts:** report all attacked flows and the
+  prediction-preserved subset for every experiment, with counts and retention
+  rate; do not imply a cross-epsilon fixed cohort.
+- **Report repeated LIME noise distributions** beside raw attack drift; never
+  subtract and clamp a single estimate.
 
 **Deliverable:** reusable metric engine with safeguards baked in.
 
 **Changed vs v1:** adds incidental/targeted split, objective/eval separation,
-fixed-cohort + retention rate, noise-floor subtraction, and model access for
-fidelity.
+explicit cohorts + retention rate, repeated noise distributions, and model access
+for fidelity.
 
 ---
 
@@ -279,9 +292,15 @@ breaks linearity because the attack invokes the explainer.
 
 **Master results table columns (min):**
 `run_id, dataset, model, explainer, strand, method, gradient_source,
-attack_objective, epsilon, seed, target_rule, retention_rate,
-incidental_drift, targeted_drift, stability_*, fidelity_*, noise_floor,
-tamper_success`
+attack_objective, epsilon, seed, target_rule, n_total, n_preserved,
+n_flipped, retention_rate, all_*, preserved_*, model_queries,
+explanation_queries, threat_model_*, lime_num_samples, noise_floor_*,
+target_objective, target_topk, all_tamper_success_topk_displacement,
+preserved_tamper_success_topk_displacement, explainer_backend,
+shap_background_size, shap_kernel_nsamples, model_accuracy, model_precision,
+model_recall, model_f1, model_test_n_*, model_true_negative,
+model_false_positive, model_false_negative, model_true_positive,
+model_comparison_eligible`
 
 **Deliverable:** benchmark database (one row per experiment, both grids).
 
@@ -296,9 +315,20 @@ tamper_success`
 **Tasks**
 - **Fragility (RQ1–3):** drift vs ε, stability vs ε, fidelity vs ε; SHAP vs LIME;
   XGBoost vs MLP; dataset comparisons; retention-rate curves.
-- **Tamper (RQ4):** targeted drift vs ε; **tamper success rate** (top-1 feature
-  suppressed while prediction preserved); SHAP vs LIME and XGBoost vs MLP tamper
-  resistance.
+- **Tamper (RQ4):** targeted drift vs ε; **tamper success rate** (the original
+  top-1 feature has rank strictly greater than *k*, while prediction is
+  preserved); target-magnitude reduction and rank deterioration are supporting
+  outcomes. Compare the default suppression objective with the rank-margin
+  sensitivity grid without pooling their outcomes.
+- **Comparability guard:** show frozen-test attack-class recall/F1 and class
+  counts beside every result. Treat a model as eligible for comparative
+  explanation claims only when both recall and F1 are at least 0.80; retain but
+  label sub-threshold runs instead of filtering them out.
+- **SHAP backend control:** compare KernelSHAP-on-XGBoost with KernelSHAP-on-MLP
+  at the same background size, coalition-sampling budget, PGD settings,
+  dataset, and seed. Treat TreeSHAP-on-XGBoost versus KernelSHAP-on-MLP as
+  architecture-plus-backend evidence unless this control supports a narrower
+  conclusion.
 - Statistical significance testing within each strand; keep incidental vs targeted
   clearly separated in every plot.
 
@@ -329,10 +359,11 @@ tamper_success`
 Benchmark Framework
 │
 ├── Dataset Module          (loaders, frozen scaler, attack subset, feature map)
-├── Model Module            (xgboost, mlp; predict_proba = attack surface)
+├── Model Module            (xgboost, mlp; probability oracle = attack surface)
 ├── Explainer Module        (SHAP/LIME, target selector, LIME noise floor)
+├── Oracle Layer            (probability + explanation service boundaries/budgets)
 ├── Attack Module           (SPSA-PGD; objectives: loss | attribution)
-│        └── depends on Explainer for the tamper strand
+│        └── receives oracles, never raw model/explainer/background
 ├── Metric Engine           (stability, fidelity, drift; safeguards)
 ├── Benchmark Runner        (fragility path | tamper path)
 ├── Experiment Definitions  (YAML per §2)

@@ -1,7 +1,7 @@
 # Attack Strategy
 
 **Framework:** XAI-IDS robustness benchmark
-**Status:** Design decision record (Phase 5 — Adversarial Attack Module)
+**Status:** Design decision record (implemented through improvement Phase 6)
 **Scope:** How adversarial perturbations are generated against XGBoost and MLP
 intrusion-detection models, and how the two research strands — explanation
 *fragility* and explanation *tamper resistance* — are operationalised.
@@ -15,16 +15,34 @@ of truth.
 
 ## 1. Threat model
 
-The threat model is **black-box, input-space, and prediction-preserving**:
+The threat model is **black-box** and **input-space**, and treats prediction
+preservation differently by strand:
 
-- **Black-box.** The attacker can query the model's output probabilities but has
-  no access to weights, gradients, or training data. This matches the most
-  realistic deployed-IDS scenario and is the model already stated in the thesis.
+- **Probability-query black-box.** The attacker can query class probabilities,
+  from which labels are derived, but has no access to weights, gradients, native
+  backend, or training data.
+- **Explanation oracle.** For the targeted strand, the attacker may request an
+  attribution array from a separate explanation service. The service owns the
+  explainer, any training-background sample, and any TreeSHAP native-model
+  access; the attacker receives only arrays and a logical request count. This
+  makes the explanation access explicit rather than silently treating it as
+  ordinary model access.
+- **Query budgets.** Each attack is capped at 125,000 individual probability
+  vectors and 250 logical explanation-service requests by the published config.
+  Backend-internal prediction calls made by SHAP/LIME are not observable at this
+  service boundary and are reported as excluded, not folded into the model-query
+  count.
 - **Input-space.** Perturbations are applied to the (normalised) feature vector.
-- **Prediction-preserving.** Only perturbations that leave the model's hard-label
-  prediction unchanged are retained (fragility strand) or enforced during
-  optimisation (tamper strand). The research question is what happens to the
-  *explanation* while the *decision* is held fixed.
+- **Prediction preservation is strand-specific.** In the **tamper** strand it is
+  *enforced during optimisation* — the whole point is that the explanation is
+  redirected while the decision is held fixed, so metrics are computed only on the
+  preserved cohort. In the **fragility** strand it is *not* a constraint: the
+  attack maximises model loss and may flip the decision, and we measure the
+  *incidental* explanation drift over all perturbed flows, reporting the retention
+  rate (the fraction whose prediction survived) as a separate diagnostic. Gating
+  fragility on the preserved cohort would erase data whenever a model is highly
+  brittle — e.g. the CICIDS-2017 XGBoost IDS, whose predictions flip on nearly
+  every flow even at ε = 0.01, which is itself a fragility finding.
 
 Perturbations are treated as **controlled experimental stimuli** for measuring
 explanation behaviour, not as claims of physically realisable network flows.
@@ -44,7 +62,7 @@ what the attack optimises.
 
 | Strand | Attack objective | What it measures | Thesis link |
 |---|---|---|---|
-| **Fragility** (primary breadth) | Model loss (standard FGSM / PGD) | *Incidental* explanation drift under prediction-preserving perturbation | RQ1–RQ3 |
+| **Fragility** (primary breadth) | Model loss (standard FGSM / PGD) | *Incidental* explanation drift over all perturbed flows (retention reported separately) | RQ1–RQ3 |
 | **Tamper resistance** (headline claim) | The explanation itself (targeted) | *Deliberate* manipulation of the explanation while the prediction holds | RQ4 |
 
 The fragility strand answers "how much do explanations wobble under standard
@@ -115,8 +133,9 @@ the ε-ball (L∞ by default) after each step, and PGD is run as a **bounded
 perturbation** (fixed step budget, early-stop before a prediction flip) rather
 than to convergence, so it explores the ε-ball instead of racing to the boundary.
 
-- **Fragility strand:** objective = model loss. Evaluate on samples whose
-  prediction is preserved.
+- **Fragility strand:** objective = model loss. Evaluate on **all** perturbed
+  flows (the perturbation may flip the decision); retention is reported as a
+  diagnostic.
 - **Tamper strand:** objective = an attribution-manipulation loss (below), with
   prediction preservation enforced in-loop via a penalty / projection.
 
@@ -124,7 +143,7 @@ than to convergence, so it explores the ε-ball instead of racing to the boundar
 
 ## 5. Decision 2 — the targeted (tamper-resistance) attack
 
-### Objective
+### Objective and primary success outcome
 
 The targeted attack optimises the perturbation to move the explanation. The
 default is **targeted suppression**: drive down the attribution of the feature
@@ -135,6 +154,19 @@ relevant threat for IDS.
 Because the target must generalise across two datasets with different feature
 sets, the target is defined by a **rule, not a feature name**: for each sample,
 target the top-1 baseline-attributed feature for the predicted class.
+
+The primary attack objective is **suppression**: maximise the negative absolute
+attribution of that attack-time target. The primary reported outcome is stricter
+and deliberately different: success means the original target has a
+deterministic attribution rank **greater than `k`** after perturbation. Relative
+target-attribution reduction and rank deterioration are supporting outcomes,
+not substitutes for displacement. Ties are resolved stably by feature index.
+
+`rank_margin` is an optional sensitivity objective. It maximises the margin
+between the target magnitude and the *k*-th strongest non-target magnitude; its
+purpose is to test whether the conclusion depends on optimising suppression
+rather than displacement directly. It is run under a separate configuration
+grid and never replaces the primary suppression result.
 
 ### Why query-based on both models
 
@@ -179,16 +211,21 @@ et al. scaffolding family); sensitivity to the choice of attribution target.
 
 ## 7. Methodological safeguards
 
-- **Fixed evaluation cohort.** Report drift on the set of samples whose prediction
-  is preserved across *all* ε tested (not a per-ε changing set), and report the
-  retention rate separately. Prevents selection bias from discarded flipped
-  samples contaminating the drift-vs-ε curve.
+- **Evaluation cohort by strand.** For **tamper**, report on the prediction-
+  preserved cohort (preservation is enforced in-loop, so this is a stable,
+  by-construction set) — this isolates explanation manipulation from decision
+  change. For **fragility**, report incidental drift over *all* perturbed flows
+  and report the retention rate separately as a diagnostic, rather than gating on
+  a preserved subset: gating would introduce selection bias and, for a highly
+  brittle model, leave no cohort at all. In both cases the retention rate is
+  reported alongside the drift metrics rather than silently filtered.
 - **Objective / evaluation separation.** The targeted attack optimises one drift
   measure; robustness is *reported* on independent held-out metrics (top-k
   Jaccard, Spearman, fidelity) so the attack cannot "teach to the test."
-- **LIME noise floor.** Recompute LIME several times on the *unperturbed* input to
-  estimate intrinsic variance (the Rashomon / stochastic-sampling effect), and
-  subtract it, so intrinsic instability is not misread as attack-induced drift.
+- **LIME noise distribution.** Recompute LIME from several fresh, independently
+  seeded instances on the *unperturbed* input and store per-flow benign drift.
+  Report raw attack drift, the benign distribution, and the attack-minus-noise
+  distribution; do not subtract and clamp a single noise estimate to zero.
 - **Dataset-agnostic metric parameters.** `k` for top-k Jaccard is fixed (or a
   fixed fraction of feature count) so metrics are comparable across the two
   datasets.
@@ -222,14 +259,13 @@ overflow worker for extra cells, since each cell is independent.
 
 ## 9. Interface and architecture implications
 
-- **`Attack` takes a pluggable objective.** Model-loss (fragility) and
-  attribution-manipulation (tamper) are two objectives behind one interface;
-  the gradient source is `spsa` (both models) with `autograd` available as an
-  MLP-only option.
-- **`Attack` depends on `Explainer` for the tamper strand.** The targeted attack
-  calls the explainer inside its optimisation loop, so the Benchmark Runner's
-  linear pipeline (baseline → attack → explain → metrics) is adjusted for that
-  strand, and baseline-attribution caching helps less there.
+- **`Attack` takes a pluggable objective and oracle interfaces.** Model-loss
+  (fragility) and attribution-manipulation (tamper) are two objectives behind
+  one interface; the gradient source is `spsa`, supplied with probability and
+  (when needed) explanation-oracle responses rather than raw components.
+- **`Attack` never owns an `Explainer` or `Model`.** The targeted attack invokes
+  the explanation oracle inside its optimisation loop; its privileged backend
+  state and background sample remain in the runner-owned service.
 - **Constrained optimisation.** Prediction preservation is a first-class part of
   the attack loop, not a post-filter.
 
@@ -244,8 +280,9 @@ overflow worker for extra cells, since each cell is independent.
 - **Targeted-B breadth is compute-bounded** (8 cells, modest ε/seed depth).
 - **Unconstrained perturbations** may be physically implausible in real flows
   (already framed as controlled stimuli).
-- **Target-rule dependence.** Tamper results depend on the choice of attribution
-  target (top-1 suppression); stated as an assumption.
+- **Target-rule and objective dependence.** Tamper results depend on choosing a
+  top-1 baseline target and on the suppression objective; the rank-margin
+  sensitivity grid tests the objective choice but not alternative target rules.
 - **ε not comparable across datasets** (normalised-space definition).
 
 ---

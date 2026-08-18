@@ -1,0 +1,9 @@
+2026-08-18 05:53:55,977 | INFO    | xai_ids | run dir: results/v3/unsw-xgboost-lime-frag-pgd-e0.03-s42
+2026-08-18 05:53:55,978 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-18 05:53:56,860 | INFO    | xai_ids | loading cached model results/v3/unsw-xgboost-s42/model.ubj
+2026-08-18 05:53:57,046 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 05:53:57,046 | INFO    | xai_ids | baseline lime attributions ...
+2026-08-18 05:54:00,208 | INFO    | xai_ids | attack: pgd strand=fragility objective=loss eps=0.03 steps=50
+2026-08-18 05:54:35,333 | INFO    | xai_ids | computing metrics ...
+2026-08-18 05:54:35,682 | INFO    | xai_ids | row -> results/v3/results.csv | retention=0.354
+2026-08-18 05:54:35,682 | INFO    | xai_ids | [sweep 104/144] unsw-xgboost-lime-frag-pgd-e0.03-s7
