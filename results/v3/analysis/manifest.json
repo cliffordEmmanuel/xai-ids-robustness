@@ -1,0 +1,12 @@
+{
+  "bootstrap_repeats": 10000,
+  "bootstrap_rows": 3912,
+  "created_utc": "2026-08-18T12:30:48.305660+00:00",
+  "kind": "conditional-within-cell-analysis",
+  "lime_test_rows": 612,
+  "permutation_repeats": 10000,
+  "results_csv_sha256": "5f398ed8639812d087aaef109a5ae3650599c2097de7acbb93ec41d86fc7a114",
+  "results_schema_version": "3.5",
+  "scope_note": "Intervals and paired sign-flip p-values are conditional within-cell summaries; they are not independent-condition or population inference.",
+  "seed": 2026
+}

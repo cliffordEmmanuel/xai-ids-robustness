@@ -1,0 +1,20 @@
+2026-08-18 05:26:04,634 | INFO    | xai_ids | run dir: results/v3/cicids-mlp-shap-frag-fgsm-e0.01-s123
+2026-08-18 05:26:04,634 | INFO    | xai_ids | loading + preprocessing dataset 'cicids2017' ...
+2026-08-18 05:26:24,935 | INFO    | xai_ids | training mlp (class_weight=True) ...
+2026-08-18 05:26:32,880 | INFO    | xai_ids |   epoch 2/20 loss=0.0761
+2026-08-18 05:26:40,829 | INFO    | xai_ids |   epoch 4/20 loss=0.0549
+2026-08-18 05:26:48,811 | INFO    | xai_ids |   epoch 6/20 loss=0.0482
+2026-08-18 05:26:56,711 | INFO    | xai_ids |   epoch 8/20 loss=0.0456
+2026-08-18 05:27:04,584 | INFO    | xai_ids |   epoch 10/20 loss=0.0455
+2026-08-18 05:27:12,418 | INFO    | xai_ids |   epoch 12/20 loss=0.0423
+2026-08-18 05:27:20,511 | INFO    | xai_ids |   epoch 14/20 loss=0.0407
+2026-08-18 05:27:28,355 | INFO    | xai_ids |   epoch 16/20 loss=0.0401
+2026-08-18 05:27:36,253 | INFO    | xai_ids |   epoch 18/20 loss=0.0393
+2026-08-18 05:27:44,080 | INFO    | xai_ids |   epoch 20/20 loss=0.0387
+2026-08-18 05:27:44,269 | INFO    | xai_ids | model metrics: {'accuracy': 0.9887043724937477, 'precision': 0.93444247491172, 'recall': 0.9948289696573449, 'f1': 0.9636906689697362, 'test_n_total': 446633, 'test_n_benign': 379335, 'test_n_attack': 67298, 'true_negative': 374638, 'false_positive': 4697, 'false_negative': 348, 'true_positive': 66950, 'min_attack_recall': 0.8, 'min_f1': 0.8, 'comparison_eligible': True}
+2026-08-18 05:27:44,437 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 05:27:44,437 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-18 05:27:46,051 | INFO    | xai_ids | attack: fgsm strand=fragility objective=loss eps=0.01 steps=1
+2026-08-18 05:27:47,675 | INFO    | xai_ids | computing metrics ...
+2026-08-18 05:27:47,871 | INFO    | xai_ids | row -> results/v3/results.csv | retention=0.930
+2026-08-18 05:27:47,871 | INFO    | xai_ids | [sweep 40/144] cicids-mlp-shap-frag-fgsm-e0.03-s42

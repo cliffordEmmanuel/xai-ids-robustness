@@ -1,0 +1,18 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "1f39ff2b864c534710fa4e0f200a29ada63c1961f22b3fda2af4aef493d0ef4b"
+    },
+    "metrics.json": {
+      "sha256": "be3c5e1a955669e12140d985b6e7d669d7b8788a6aecb7b79609f4c1a86aa30d"
+    },
+    "provenance.json": {
+      "sha256": "661adb634371d5da97dec7ed138e72710a842aa55998623919b509a26e0dc828"
+    }
+  },
+  "created_utc": "2026-08-17T15:09:49.019232+00:00",
+  "experiment_id": "unsw-xgboost-lime-frag-pgd-e0.05-s123",
+  "kind": "experiment-run",
+  "results_version": "v2",
+  "schema_version": "2.0"
+}

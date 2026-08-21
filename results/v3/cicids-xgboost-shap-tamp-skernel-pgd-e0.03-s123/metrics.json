@@ -1,0 +1,101 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 500,
+    "n_flipped": 0,
+    "retention_rate": 1.0,
+    "n_frozen_due_prediction_flip": 497,
+    "model_queries": 1675,
+    "explanation_queries": 201,
+    "n_perturbed": 14,
+    "n_explainer_convergence_warnings": 3
+  },
+  "model_quality": {
+    "accuracy": 0.9989611157258868,
+    "precision": 0.9938083697836624,
+    "recall": 0.9993313322832774,
+    "f1": 0.9965621990071868,
+    "test_n_total": 446633,
+    "test_n_benign": 379335,
+    "test_n_attack": 67298,
+    "true_negative": 378916,
+    "false_positive": 419,
+    "false_negative": 45,
+    "true_positive": 67253,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 1675,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": {
+      "access": "explanation_oracle",
+      "queries": 201,
+      "budget": 250,
+      "query_unit": "logical explanation-service request per batch",
+      "internal_model_queries": "not_observed_at_oracle_boundary"
+    }
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 3,
+    "convergence_warning_messages": [
+      "Regressors in active set degenerate. Dropping a regressor, after 4 iterations, i.e. alpha=1.624e-02, with an active set of 4 regressors, and the smallest cholesky pivot element being 7.885e-08. Reduce max_iter or increase eps parameters.",
+      "Regressors in active set degenerate. Dropping a regressor, after 6 iterations, i.e. alpha=1.232e-02, with an active set of 6 regressors, and the smallest cholesky pivot element being 2.220e-16. Reduce max_iter or increase eps parameters.",
+      "Regressors in active set degenerate. Dropping a regressor, after 7 iterations, i.e. alpha=1.208e-02, with an active set of 7 regressors, and the smallest cholesky pivot element being 5.960e-08. Reduce max_iter or increase eps parameters."
+    ]
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 1.0,
+    "drift_cosine": 0.22130224448252322,
+    "drift_l1": 0.8754919324790876,
+    "drift_l2": 0.25796102377215346,
+    "spearman": 0.24943937680748327,
+    "topk_jaccard": 0.2001441008252154,
+    "fidelity_baseline_deletion": 0.02124922256446008,
+    "fidelity_adversarial_deletion": 0.01971705865700588,
+    "fidelity_baseline_insertion": 0.5639813803905726,
+    "fidelity_adversarial_insertion": 0.5664927134099287,
+    "tamper_success_topk_displacement": 0.032,
+    "target_baseline_abs_attribution": 0.34926743710957486,
+    "target_adversarial_abs_attribution": 0.34295543182695803,
+    "target_relative_attribution_reduction": 0.011554976061616911,
+    "target_baseline_rank": 1.0,
+    "target_adversarial_rank": 2.724,
+    "target_rank_deterioration": 1.724,
+    "target_in_topk_baseline": 1.0,
+    "target_in_topk_adversarial": 0.968
+  },
+  "prediction_preserved": {
+    "n_evaluated": 500,
+    "retention_rate": 1.0,
+    "drift_cosine": 0.22130224448252322,
+    "drift_l1": 0.8754919324790876,
+    "drift_l2": 0.25796102377215346,
+    "spearman": 0.24943937680748327,
+    "topk_jaccard": 0.2001441008252154,
+    "fidelity_baseline_deletion": 0.02124922256446008,
+    "fidelity_adversarial_deletion": 0.01971705865700588,
+    "fidelity_baseline_insertion": 0.5639813803905726,
+    "fidelity_adversarial_insertion": 0.5664927134099287,
+    "tamper_success_topk_displacement": 0.032,
+    "target_baseline_abs_attribution": 0.34926743710957486,
+    "target_adversarial_abs_attribution": 0.34295543182695803,
+    "target_relative_attribution_reduction": 0.011554976061616911,
+    "target_baseline_rank": 1.0,
+    "target_adversarial_rank": 2.724,
+    "target_rank_deterioration": 1.724,
+    "target_in_topk_baseline": 1.0,
+    "target_in_topk_adversarial": 0.968
+  }
+}

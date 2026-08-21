@@ -1,0 +1,24 @@
+# Phase 6 sensitivity control: the same headline tamper cells, but optimise
+# rank-margin displacement rather than only target-attribution suppression.
+# It is intentionally a separate grid so rank-margin outcomes cannot overwrite
+# the primary suppression runs in results/v3/.
+output_dir: configs/tamper_rank_margin
+base: configs/tamper_example.yaml
+# Initial v4 KernelSHAP release profile. Retain it only if Phase 9 calibration
+# selects it; see docs/kernelshap_stability.md before running this grid.
+kernel_shap:
+  shap_kernel_l1_reg: 0.0001
+  shap_kernel_stability_repeats: 3
+  shap_kernel_stability_seeds: [2003, 2011, 2017]
+  shap_kernel_additivity_tolerance: 0.000001
+  shap_kernel_repeat_cosine_drift_tolerance: 0.05
+  require_shap_kernel_stability: true
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  model: [xgboost, mlp]
+  explainer: [shap, lime]
+  strand: [tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  target_objective: [rank_margin]
+  seed: [42, 7, 123]

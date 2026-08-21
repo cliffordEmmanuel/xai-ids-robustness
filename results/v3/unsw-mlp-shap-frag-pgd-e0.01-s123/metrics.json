@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 487,
+    "n_flipped": 13,
+    "retention_rate": 0.974,
+    "n_frozen_due_prediction_flip": 0,
+    "model_queries": 101000,
+    "explanation_queries": 0,
+    "n_perturbed": 488,
+    "n_explainer_convergence_warnings": 1
+  },
+  "model_quality": {
+    "accuracy": 0.9004542504866969,
+    "precision": 0.8797164745471469,
+    "recall": 0.8985009140767825,
+    "f1": 0.8890094783300774,
+    "test_n_total": 30820,
+    "test_n_benign": 17145,
+    "test_n_attack": 13675,
+    "true_negative": 15465,
+    "false_positive": 1680,
+    "false_negative": 1388,
+    "true_positive": 12287,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 101000,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": null
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 1,
+    "convergence_warning_messages": [
+      "Regressors in active set degenerate. Dropping a regressor, after 4 iterations, i.e. alpha=1.275e-02, with an active set of 4 regressors, and the smallest cholesky pivot element being 9.424e-08. Reduce max_iter or increase eps parameters."
+    ]
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 0.974,
+    "drift_cosine": 0.1776659780343672,
+    "drift_l1": 0.5221865948419369,
+    "drift_l2": 0.16151430032499317,
+    "spearman": 0.37430993828729686,
+    "topk_jaccard": 0.2651266231188832,
+    "fidelity_baseline_deletion": 0.5760339498519899,
+    "fidelity_adversarial_deletion": 0.5798011627935229,
+    "fidelity_baseline_insertion": 0.9417724623566581,
+    "fidelity_adversarial_insertion": 0.9357855845065344
+  },
+  "prediction_preserved": {
+    "n_evaluated": 487,
+    "retention_rate": 0.974,
+    "drift_cosine": 0.17613184512445051,
+    "drift_l1": 0.5173946999063317,
+    "drift_l2": 0.16048480658574085,
+    "spearman": 0.3764519209558653,
+    "topk_jaccard": 0.2672408642618622,
+    "fidelity_baseline_deletion": 0.575244936205092,
+    "fidelity_adversarial_deletion": 0.5779951349610374,
+    "fidelity_baseline_insertion": 0.9464805523554484,
+    "fidelity_adversarial_insertion": 0.9418273184980666
+  }
+}

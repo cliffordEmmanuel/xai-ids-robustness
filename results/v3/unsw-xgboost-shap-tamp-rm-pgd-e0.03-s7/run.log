@@ -1,0 +1,9 @@
+2026-08-18 11:29:55,489 | INFO    | xai_ids | run dir: results/v3/unsw-xgboost-shap-tamp-rm-pgd-e0.03-s7
+2026-08-18 11:29:55,489 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-18 11:29:56,306 | INFO    | xai_ids | loading cached model results/v3/unsw-xgboost-s7/model.ubj
+2026-08-18 11:29:56,488 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 11:29:56,488 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-18 11:29:56,655 | INFO    | xai_ids | attack: pgd strand=tamper objective=attribution eps=0.03 steps=50
+2026-08-18 11:30:17,740 | INFO    | xai_ids | computing metrics ...
+2026-08-18 11:30:18,201 | INFO    | xai_ids | row -> results/v3/results.csv | retention=1.000
+2026-08-18 11:30:18,202 | INFO    | xai_ids | [sweep 15/24] unsw-xgboost-shap-tamp-rm-pgd-e0.03-s123

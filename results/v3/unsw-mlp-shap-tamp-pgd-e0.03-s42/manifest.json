@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "ffacc59c915512f0c923b2e36181ac53884595efdcbba390da864dc9373e26a5"
+    },
+    "fidelity.json": {
+      "sha256": "1b088a0167f10135dd6c94c11e6d004f371507a80b5ee970df503ca393f71105"
+    },
+    "metrics.json": {
+      "sha256": "12fbf4510fef48f1b06e339c095d8386a60de1a61b48824bd09617db9e57e82d"
+    },
+    "noise_floor.npz": {
+      "sha256": "1c599dc94289d562d77996d703ec78014e85553c4e7df2ad1f5185084491e66d"
+    },
+    "per_flow.csv": {
+      "sha256": "ab6f9d29bd58c7976d0f826046ad9b39752d4f24379aca840ed59ec2c56b78d6"
+    },
+    "provenance.json": {
+      "sha256": "fc6f88a19d515b26801c3803a981b54a105370ec15be35265aed188121408fb4"
+    }
+  },
+  "created_utc": "2026-08-18T07:59:37.070058+00:00",
+  "experiment_id": "unsw-mlp-shap-tamp-pgd-e0.03-s42",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

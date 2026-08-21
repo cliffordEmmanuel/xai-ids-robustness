@@ -1,0 +1,18 @@
+# Final core tamper evidence: 18 cells.
+# 2 datasets x 3 eligible model/explainer pairs x 3 seeds.
+output_dir: configs/v4_core_tamper
+base: configs/v4_primary_base.yaml
+model_explainer_pairs:
+  - model: xgboost
+    explainer: shap
+    shap_backend: tree
+  - model: xgboost
+    explainer: lime
+  - model: mlp
+    explainer: lime
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  strand: [tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42, 7, 123]

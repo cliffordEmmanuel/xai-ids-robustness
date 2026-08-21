@@ -1,0 +1,733 @@
+{
+  "created_utc": "2026-08-18T07:29:15.152330+00:00",
+  "seed": 42,
+  "versions": {
+    "python": "3.12.13",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "numpy": "2.4.6",
+    "pyyaml": "6.0.3",
+    "pydantic": "2.13.4",
+    "scikit-learn": "1.9.0",
+    "xgboost": "2.1.4",
+    "torch": "2.13.0",
+    "shap": "0.52.0",
+    "lime": "0.2.0.1",
+    "pandas": "3.0.5",
+    "scipy": "1.18.0",
+    "imbalanced-learn": "0.14.2"
+  },
+  "code": {
+    "git_revision": "b81ee43d1aa00bd8247e592418208c4f80f741a5",
+    "worktree_dirty": true,
+    "changed_file_count": 66
+  },
+  "config": {
+    "run": {
+      "id": null,
+      "seed": 42,
+      "seeds": [
+        42,
+        7,
+        123
+      ],
+      "output_dir": "results/",
+      "results_version": "v3"
+    },
+    "dataset": {
+      "name": "unsw_nb15",
+      "data_dir": "data/raw/unsw_nb15",
+      "normalise": "standard",
+      "balance": "none",
+      "test_size": 0.2,
+      "attack_subset_size": 500
+    },
+    "model": {
+      "name": "xgboost",
+      "class_weight": true,
+      "params": {}
+    },
+    "explainer": {
+      "name": "lime",
+      "shap_backend": "tree",
+      "shap_background_size": 100,
+      "shap_kernel_nsamples": 100,
+      "lime_num_samples": 1500,
+      "cache_baseline": true
+    },
+    "threat_model": {
+      "model_access": "probability_query",
+      "explanation_access": "oracle",
+      "query_budget": {
+        "model_queries": 125000,
+        "explanation_queries": 250
+      }
+    },
+    "attack": {
+      "strand": "tamper",
+      "method": "pgd",
+      "gradient_source": "spsa",
+      "objective": "attribution",
+      "epsilon": 0.03,
+      "steps": 50,
+      "step_size": 0.005,
+      "spsa": {
+        "q": 2,
+        "delta": 0.01
+      },
+      "target_rule": "top1_suppress",
+      "target_objective": "suppression",
+      "enforce_prediction_preserved": true
+    },
+    "metrics": {
+      "stability": [
+        "spearman",
+        "topk_jaccard"
+      ],
+      "fidelity": [
+        "local_fidelity",
+        "deletion",
+        "insertion"
+      ],
+      "drift": [
+        "cosine",
+        "l1",
+        "l2"
+      ],
+      "topk": 10,
+      "measure_lime_noise_floor": true,
+      "noise_floor_repeats": 10,
+      "noise_floor_seeds": [
+        1009,
+        1013,
+        1019,
+        1021,
+        1031,
+        1033,
+        1039,
+        1049,
+        1051,
+        1061
+      ]
+    }
+  },
+  "extra": {
+    "preprocessing": {
+      "source": "UNSW-NB15 (UNSW Canberra)",
+      "n_files": 2,
+      "attack_categories": [
+        "Analysis",
+        "Backdoor",
+        "DoS",
+        "Exploits",
+        "Fuzzers",
+        "Generic",
+        "Normal",
+        "Reconnaissance",
+        "Shellcode",
+        "Worms"
+      ],
+      "categorical_columns": [
+        "proto",
+        "service",
+        "state"
+      ],
+      "categorical_encoding": {
+        "columns": [
+          "proto",
+          "service",
+          "state"
+        ],
+        "top_n": {
+          "proto": 15,
+          "service": 15,
+          "state": 12
+        },
+        "other_label": "other"
+      },
+      "positive_label": "attack",
+      "preprocessing_schema_version": "2",
+      "fidelity_reference": {
+        "source": "training_mean_with_categorical_group_modes",
+        "feature_groups": [
+          [
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54
+          ],
+          [
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68
+          ],
+          [
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80
+          ],
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ],
+          [
+            6
+          ],
+          [
+            7
+          ],
+          [
+            8
+          ],
+          [
+            9
+          ],
+          [
+            10
+          ],
+          [
+            11
+          ],
+          [
+            12
+          ],
+          [
+            13
+          ],
+          [
+            14
+          ],
+          [
+            15
+          ],
+          [
+            16
+          ],
+          [
+            17
+          ],
+          [
+            18
+          ],
+          [
+            19
+          ],
+          [
+            20
+          ],
+          [
+            21
+          ],
+          [
+            22
+          ],
+          [
+            23
+          ],
+          [
+            24
+          ],
+          [
+            25
+          ],
+          [
+            26
+          ],
+          [
+            27
+          ],
+          [
+            28
+          ],
+          [
+            29
+          ],
+          [
+            30
+          ],
+          [
+            31
+          ],
+          [
+            32
+          ],
+          [
+            33
+          ],
+          [
+            34
+          ],
+          [
+            35
+          ],
+          [
+            36
+          ],
+          [
+            37
+          ],
+          [
+            38
+          ]
+        ]
+      },
+      "categorical_transformer": {
+        "columns": [
+          "proto",
+          "service",
+          "state"
+        ],
+        "top_n": {
+          "proto": 15,
+          "service": 15,
+          "state": 12
+        },
+        "other_label": "other",
+        "categories": {
+          "proto": [
+            "tcp",
+            "udp",
+            "arp",
+            "unas",
+            "ospf",
+            "sctp",
+            "igmp",
+            "any",
+            "icmp",
+            "mobile",
+            "gre",
+            "pim",
+            "rsvp",
+            "sep",
+            "ipv6",
+            "other"
+          ],
+          "service": [
+            "-",
+            "http",
+            "dns",
+            "smtp",
+            "ftp-data",
+            "ftp",
+            "ssh",
+            "pop3",
+            "ssl",
+            "snmp",
+            "dhcp",
+            "irc",
+            "radius",
+            "other"
+          ],
+          "state": [
+            "FIN",
+            "INT",
+            "CON",
+            "REQ",
+            "RST",
+            "ECO",
+            "ACC",
+            "CLO",
+            "PAR",
+            "URN",
+            "no",
+            "other"
+          ]
+        },
+        "output_columns": [
+          "dur",
+          "spkts",
+          "dpkts",
+          "sbytes",
+          "dbytes",
+          "rate",
+          "sttl",
+          "dttl",
+          "sload",
+          "dload",
+          "sloss",
+          "dloss",
+          "sinpkt",
+          "dinpkt",
+          "sjit",
+          "djit",
+          "swin",
+          "stcpb",
+          "dtcpb",
+          "dwin",
+          "tcprtt",
+          "synack",
+          "ackdat",
+          "smean",
+          "dmean",
+          "trans_depth",
+          "response_body_len",
+          "ct_srv_src",
+          "ct_state_ttl",
+          "ct_dst_ltm",
+          "ct_src_dport_ltm",
+          "ct_dst_sport_ltm",
+          "ct_dst_src_ltm",
+          "is_ftp_login",
+          "ct_ftp_cmd",
+          "ct_flw_http_mthd",
+          "ct_src_ltm",
+          "ct_srv_dst",
+          "is_sm_ips_ports",
+          "proto_tcp",
+          "proto_udp",
+          "proto_arp",
+          "proto_unas",
+          "proto_ospf",
+          "proto_sctp",
+          "proto_igmp",
+          "proto_any",
+          "proto_icmp",
+          "proto_mobile",
+          "proto_gre",
+          "proto_pim",
+          "proto_rsvp",
+          "proto_sep",
+          "proto_ipv6",
+          "proto_other",
+          "service_-",
+          "service_http",
+          "service_dns",
+          "service_smtp",
+          "service_ftp-data",
+          "service_ftp",
+          "service_ssh",
+          "service_pop3",
+          "service_ssl",
+          "service_snmp",
+          "service_dhcp",
+          "service_irc",
+          "service_radius",
+          "service_other",
+          "state_FIN",
+          "state_INT",
+          "state_CON",
+          "state_REQ",
+          "state_RST",
+          "state_ECO",
+          "state_ACC",
+          "state_CLO",
+          "state_PAR",
+          "state_URN",
+          "state_no",
+          "state_other"
+        ]
+      }
+    },
+    "threat_model": {
+      "model_access": "probability_query",
+      "explanation_access": "oracle",
+      "query_budget": {
+        "model_queries": 125000,
+        "explanation_queries": 250
+      },
+      "accounting": {
+        "model_query_unit": "individual input probability vector",
+        "explanation_query_unit": "logical explanation-service request per batch",
+        "internal_explainer_model_queries": "not_observed_at_oracle_boundary"
+      }
+    },
+    "fidelity": {
+      "reference_baseline": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.5670648760955398,
+        -0.5403252473074004,
+        -0.07086557826001628,
+        -0.061266238930581154,
+        -0.04071288944007726,
+        -0.022066758776779192,
+        -0.016113451368221034,
+        -0.012738181703129719,
+        -0.010269558806124316,
+        -0.010269558806124316,
+        -0.009446543511965656,
+        -0.009446543511965656,
+        -0.009446543511965656,
+        -0.009446543511965656,
+        -0.009006889302348529,
+        -0.07364488076829671,
+        0.812787105205197,
+        -0.4492189404038474,
+        -0.35083898797217183,
+        -0.2150877521790358,
+        -0.17351235847018007,
+        -0.1620112918560486,
+        -0.09972764063681892,
+        -0.09902002603340233,
+        -0.023492621280009545,
+        -0.022790820395736336,
+        -0.018015971031033685,
+        -0.01452411524787273,
+        -0.01103136520978112,
+        0.0,
+        0.6167406747431642,
+        -0.4001655940758151,
+        -0.37671954468390806,
+        -0.11276820489755512,
+        -0.023492621280009545,
+        -0.009006889302348527,
+        -0.004933136377227503,
+        -0.002848124511606209,
+        -0.0028481245116062093,
+        -0.0028481245116062097,
+        -0.0028481245116062097,
+        0.0
+      ],
+      "feature_groups": [
+        [
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54
+        ],
+        [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68
+        ],
+        [
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80
+        ],
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ],
+        [
+          19
+        ],
+        [
+          20
+        ],
+        [
+          21
+        ],
+        [
+          22
+        ],
+        [
+          23
+        ],
+        [
+          24
+        ],
+        [
+          25
+        ],
+        [
+          26
+        ],
+        [
+          27
+        ],
+        [
+          28
+        ],
+        [
+          29
+        ],
+        [
+          30
+        ],
+        [
+          31
+        ],
+        [
+          32
+        ],
+        [
+          33
+        ],
+        [
+          34
+        ],
+        [
+          35
+        ],
+        [
+          36
+        ],
+        [
+          37
+        ],
+        [
+          38
+        ]
+      ],
+      "source": "training_mean_with_categorical_group_modes"
+    }
+  }
+}

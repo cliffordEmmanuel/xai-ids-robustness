@@ -1,0 +1,9 @@
+2026-08-18 11:12:56,058 | INFO    | xai_ids | run dir: results/v3/cicids-mlp-lime-tamp-rm-pgd-e0.03-s42
+2026-08-18 11:12:56,059 | INFO    | xai_ids | loading + preprocessing dataset 'cicids2017' ...
+2026-08-18 11:13:16,018 | INFO    | xai_ids | loading cached model results/v3/cicids-mlp-s42/model.pt
+2026-08-18 11:13:16,284 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 11:13:16,284 | INFO    | xai_ids | baseline lime attributions ...
+2026-08-18 11:13:17,776 | INFO    | xai_ids | attack: pgd strand=tamper objective=attribution eps=0.03 steps=50
+2026-08-18 11:18:25,758 | INFO    | xai_ids | computing metrics ...
+2026-08-18 11:18:25,997 | INFO    | xai_ids | row -> results/v3/results.csv | retention=1.000
+2026-08-18 11:18:25,997 | INFO    | xai_ids | [sweep 11/24] cicids-mlp-lime-tamp-rm-pgd-e0.03-s7

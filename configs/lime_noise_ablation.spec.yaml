@@ -1,0 +1,16 @@
+# Focused LIME noise-control study (nine cells): one representative
+# dataset/model/attack condition, three explanation sample sizes, three seeds.
+# The repeated benign LIME realizations configured in fragility_example.yaml are
+# retained for every cell; compare the saved noise_floor.npz artifacts and the
+# all_attack_minus_noise_* result fields across sample counts.
+output_dir: configs/lime_noise_ablation
+base: configs/fragility_example.yaml
+axes:
+  dataset: [cicids2017]
+  model: [xgboost]
+  explainer: [lime]
+  strand: [fragility]
+  method: [pgd]
+  epsilon: [0.03]
+  lime_num_samples: [1500, 3000, 5000]
+  seed: [42, 7, 123]

@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "ecae6c0a9e01ef6f2b0f62110a12250ac93796f1daff8bc847b47b84348ce043"
+    },
+    "fidelity.json": {
+      "sha256": "ba099b78852f9c48547b9003f40ad722f08baa0c765d1de3fa17618553efbc4a"
+    },
+    "metrics.json": {
+      "sha256": "9189e004f4da78e65fa1dc3a82973883232fda4a1ca63c5785a21a17c9614c3b"
+    },
+    "noise_floor.npz": {
+      "sha256": "1c599dc94289d562d77996d703ec78014e85553c4e7df2ad1f5185084491e66d"
+    },
+    "per_flow.csv": {
+      "sha256": "9139d80a44703201a89ec06dc44633e3c13a3ab4fc738869d0fb0d889ec36280"
+    },
+    "provenance.json": {
+      "sha256": "fd6e366db46066843a57212bd653f6ee57427f25b48fb0a225eb98ee8da5d639"
+    }
+  },
+  "created_utc": "2026-08-18T04:59:40.705830+00:00",
+  "experiment_id": "cicids-xgboost-shap-frag-fgsm-e0.05-s123",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

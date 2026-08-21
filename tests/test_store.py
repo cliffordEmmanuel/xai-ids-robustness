@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from xai_ids.datasets.base import RawData
+from xai_ids.datasets.categorical import TrainOnlyCategoricalEncoder
 from xai_ids.datasets.preprocess import preprocess
 from xai_ids.datasets.store import load_bundle, save_bundle
 
@@ -15,7 +16,7 @@ def _bundle():
     X = pd.DataFrame(rng.normal(size=(120, 3)), columns=["a", "b", "c"])
     y = (rng.random(120) < 0.4).astype(int)
     raw = RawData(X=X, y=y, feature_names=["a", "b", "c"])
-    return preprocess(raw, seed=1, normalise="standard", balance="none", attack_subset_size=15)
+    return preprocess(raw, seed=1, normalise="standard", balance="none")
 
 
 def test_feature_index():
@@ -30,8 +31,9 @@ def test_save_load_roundtrip(tmp_path):
 
     assert np.array_equal(b.X_train, r.X_train)
     assert np.array_equal(b.X_test, r.X_test)
-    assert np.array_equal(b.attack_indices, r.attack_indices)
     assert r.feature_names == b.feature_names
+    assert np.array_equal(b.fidelity_baseline, r.fidelity_baseline)
+    assert b.feature_groups == r.feature_groups
     # scaler survives and transforms identically
     x = np.zeros((1, 3))
     assert np.allclose(b.scaler.transform(x), r.scaler.transform(x))
@@ -48,4 +50,31 @@ def test_save_load_without_scaler(tmp_path):
     save_bundle(b, tmp_path / "d")
     r = load_bundle(tmp_path / "d")
     assert r.scaler is None
+    assert np.array_equal(b.X_train, r.X_train)
+
+
+def test_save_load_with_categorical_transformer(tmp_path):
+    raw = RawData(
+        X=pd.DataFrame(
+            {
+                "value": np.arange(20, dtype=float),
+                "proto": ["tcp"] * 10 + ["udp"] * 10,
+            }
+        ),
+        y=np.array([0, 1] * 10),
+        feature_names=["value", "proto"],
+        meta={
+            "categorical_encoding": {
+                "columns": ["proto"],
+                "top_n": {"proto": 2},
+                "other_label": "other",
+            }
+        },
+    )
+    b = preprocess(raw, seed=1, normalise="none", balance="none")
+    save_bundle(b, tmp_path / "unsw")
+    r = load_bundle(tmp_path / "unsw")
+
+    assert isinstance(r.categorical_transformer, TrainOnlyCategoricalEncoder)
+    assert r.categorical_transformer.state() == b.categorical_transformer.state()
     assert np.array_equal(b.X_train, r.X_train)

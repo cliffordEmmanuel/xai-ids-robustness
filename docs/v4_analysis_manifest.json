@@ -1,0 +1,38 @@
+{
+  "manifest_version": "1.0",
+  "purpose": "Compact tracked provenance summary for the final v4 thesis analysis.",
+  "source": {
+    "code_revision": "97c553b",
+    "code_tag": "v4-release-candidate",
+    "release_date": "2026-08-19",
+    "raw_results_dir": "results/v4",
+    "raw_results_csv_sha256": "373c1aaade28b50e989381cb09c1186fce8c355c87f1cb7014b2fb3a389f153e",
+    "raw_row_count": 135
+  },
+  "derived_analysis": {
+    "local_dir": "results/v4-analysis",
+    "local_full_manifest": "results/v4-analysis/included_manifest.json",
+    "validation_command": "uv run xai-ids validate-results results/v4-analysis",
+    "validated_row_count": 126,
+    "inclusion_rule": "explainer_backend != 'kernel'",
+    "included_groups": {
+      "TreeSHAP/XGBoost fragility": 36,
+      "TreeSHAP/XGBoost tamper": 6,
+      "LIME/XGBoost fragility": 36,
+      "LIME/XGBoost tamper": 6,
+      "LIME/MLP fragility": 36,
+      "LIME/MLP tamper": 6
+    }
+  },
+  "exclusions": {
+    "count": 9,
+    "configuration": "KernelSHAP/XGBoost backend control",
+    "reason": "The attempted production control passed calibration and the 12-flow smoke, but seven of nine completed 500-flow rows exceeded the frozen fresh-seed cosine-drift limit of 0.05. The remaining three rows were not run. All nine rows remain in the raw record as audit evidence and are excluded from robustness and tamper analysis."
+  },
+  "model_quality_guard": {
+    "rule": "attack-class recall >= 0.80 and F1 >= 0.80",
+    "included_rows_failing_guard": 0
+  },
+  "raw_record_preserved": true,
+  "note": "Large result artefacts are intentionally ignored by Git. The local full manifest contains the complete included and excluded experiment-ID lists."
+}

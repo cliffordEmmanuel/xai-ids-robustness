@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "f1636f5d124da5d0a6cc96942f442772e2a1226860d73aebc7315685b740731c"
+    },
+    "fidelity.json": {
+      "sha256": "66a692bce6cac8b30dbe3ade0400f89f29a846cd44982f2994568c4b65e94898"
+    },
+    "metrics.json": {
+      "sha256": "68518b8b2e94a727265b90902eddb545f7dd94e9b43c8355082ae2daba1c1b97"
+    },
+    "noise_floor.npz": {
+      "sha256": "97e6a76a4f93c8d2be55e455c9f0d450e3695903570c5db9cfb597189233fd75"
+    },
+    "per_flow.csv": {
+      "sha256": "76cb8a8a384b1ba0b0a708ede37d5d96f1b4e86244f233fdda49ae323584fd22"
+    },
+    "provenance.json": {
+      "sha256": "9f46570d3611fdcdb9b5144b47d6602c5c0f0990d5a56d5de19082d7d6af4d5b"
+    }
+  },
+  "created_utc": "2026-08-18T07:54:00.815426+00:00",
+  "experiment_id": "unsw-xgboost-lime-tamp-pgd-e0.03-s123",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

@@ -1,0 +1,17 @@
+# 12 cells: both datasets, both strands, and the three final core pairs.
+output_dir: configs/v4_core_smoke
+base: configs/v4_core_smoke_base.yaml
+model_explainer_pairs:
+  - model: xgboost
+    explainer: shap
+    shap_backend: tree
+  - model: xgboost
+    explainer: lime
+  - model: mlp
+    explainer: lime
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  strand: [fragility, tamper]
+  method: [pgd]
+  epsilon: [0.03]
+  seed: [42]

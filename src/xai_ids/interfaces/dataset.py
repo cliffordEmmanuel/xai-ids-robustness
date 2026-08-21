@@ -24,12 +24,11 @@ class DataBundle:
     X_test: np.ndarray
     y_test: np.ndarray
 
-    # Frozen slice of the test set used by the tamper strand.
-    X_attack: np.ndarray
-    attack_indices: np.ndarray
-
     feature_names: list[str]
     scaler: Any = None  # fitted on train only, frozen, persisted
+    categorical_transformer: Any = None  # fitted on train only, frozen, persisted
+    fidelity_baseline: np.ndarray | None = None  # derived from train only, model space
+    feature_groups: list[list[int]] = field(default_factory=list)
     meta: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -39,6 +38,15 @@ class DataBundle:
             raise ValueError(
                 "feature_names length does not match the number of features."
             )
+        if self.fidelity_baseline is not None and self.fidelity_baseline.shape != (
+            self.X_train.shape[1],
+        ):
+            raise ValueError("fidelity_baseline must have one value per feature.")
+        if self.feature_groups:
+            flattened = [index for group in self.feature_groups for index in group]
+            expected = list(range(self.X_train.shape[1]))
+            if sorted(flattened) != expected:
+                raise ValueError("feature_groups must partition every feature exactly once.")
 
     @property
     def n_features(self) -> int:

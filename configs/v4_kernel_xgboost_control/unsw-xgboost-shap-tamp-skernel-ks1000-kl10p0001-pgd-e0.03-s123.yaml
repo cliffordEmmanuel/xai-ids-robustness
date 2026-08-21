@@ -1,0 +1,73 @@
+run:
+  seed: 123
+  output_dir: results
+  results_version: v4
+dataset:
+  name: unsw_nb15
+  normalise: standard
+  balance: none
+  attack_subset_size: 500
+model:
+  name: xgboost
+explainer:
+  name: shap
+  shap_backend: kernel
+  shap_background_size: 100
+  shap_kernel_nsamples: 1000
+  lime_num_samples: 1500
+  cache_baseline: true
+  shap_kernel_l1_reg: 0.0001
+  shap_kernel_stability_repeats: 3
+  shap_kernel_stability_seeds:
+  - 2003
+  - 2011
+  - 2017
+  shap_kernel_additivity_tolerance: 1.0e-06
+  shap_kernel_repeat_cosine_drift_tolerance: 0.05
+  require_shap_kernel_stability: true
+threat_model:
+  model_access: probability_query
+  explanation_access: oracle
+  query_budget:
+    model_queries: 125000
+    explanation_queries: 250
+attack:
+  strand: tamper
+  method: pgd
+  gradient_source: spsa
+  objective: attribution
+  epsilon: 0.03
+  steps: 50
+  step_size: 0.005
+  spsa:
+    q: 2
+    delta: 0.01
+  target_rule: top1_suppress
+  target_objective: suppression
+  enforce_prediction_preserved: true
+metrics:
+  stability:
+  - spearman
+  - topk_jaccard
+  fidelity:
+  - local_fidelity
+  - deletion
+  - insertion
+  drift:
+  - cosine
+  - l1
+  - l2
+  topk: 10
+  measure_lime_noise_floor: true
+  noise_floor_repeats: 10
+  noise_floor_seeds:
+  - 1009
+  - 1013
+  - 1019
+  - 1021
+  - 1031
+  - 1033
+  - 1039
+  - 1049
+  - 1051
+  - 1061

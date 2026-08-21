@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 495,
+    "n_flipped": 5,
+    "retention_rate": 0.99,
+    "n_frozen_due_prediction_flip": 0,
+    "model_queries": 3000,
+    "explanation_queries": 0,
+    "n_perturbed": 487,
+    "n_explainer_convergence_warnings": 0
+  },
+  "model_quality": {
+    "accuracy": 0.8976963011031798,
+    "precision": 0.8584275786891947,
+    "recall": 0.9213893967093236,
+    "f1": 0.8887948365252354,
+    "test_n_total": 30820,
+    "test_n_benign": 17145,
+    "test_n_attack": 13675,
+    "true_negative": 15067,
+    "false_positive": 2078,
+    "false_negative": 1075,
+    "true_positive": 12600,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 3000,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": null
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 0,
+    "convergence_warning_messages": []
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 0.99,
+    "drift_cosine": 0.22518784283982096,
+    "drift_l1": 0.5364027228752202,
+    "drift_l2": 0.16331127902008022,
+    "spearman": 0.34254874176304795,
+    "topk_jaccard": 0.24465144951367862,
+    "fidelity_baseline_deletion": 0.4279587002737182,
+    "fidelity_adversarial_deletion": 0.4480513465546426,
+    "fidelity_baseline_insertion": 0.9263965136238508,
+    "fidelity_adversarial_insertion": 0.9233849350185623
+  },
+  "prediction_preserved": {
+    "n_evaluated": 495,
+    "retention_rate": 0.99,
+    "drift_cosine": 0.22466979629509307,
+    "drift_l1": 0.5346137451535702,
+    "drift_l2": 0.1629144614077195,
+    "spearman": 0.3425747813342312,
+    "topk_jaccard": 0.2450067457291399,
+    "fidelity_baseline_deletion": 0.42579592445066994,
+    "fidelity_adversarial_deletion": 0.4470837272348858,
+    "fidelity_baseline_insertion": 0.9305828937462398,
+    "fidelity_adversarial_insertion": 0.9269726006757646
+  }
+}

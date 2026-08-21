@@ -1,0 +1,20 @@
+2026-08-17 13:51:36,363 | INFO    | xai_ids | run dir: results/v2/unsw-mlp-shap-tamp-pgd-e0.03-s7
+2026-08-17 13:51:36,363 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-17 13:51:37,180 | INFO    | xai_ids | training mlp (class_weight=True) ...
+2026-08-17 13:51:37,670 | INFO    | xai_ids |   epoch 2/20 loss=0.2568
+2026-08-17 13:51:38,151 | INFO    | xai_ids |   epoch 4/20 loss=0.2407
+2026-08-17 13:51:38,574 | INFO    | xai_ids |   epoch 6/20 loss=0.2353
+2026-08-17 13:51:39,051 | INFO    | xai_ids |   epoch 8/20 loss=0.2304
+2026-08-17 13:51:39,526 | INFO    | xai_ids |   epoch 10/20 loss=0.2278
+2026-08-17 13:51:39,950 | INFO    | xai_ids |   epoch 12/20 loss=0.2252
+2026-08-17 13:51:40,435 | INFO    | xai_ids |   epoch 14/20 loss=0.2236
+2026-08-17 13:51:40,911 | INFO    | xai_ids |   epoch 16/20 loss=0.2220
+2026-08-17 13:51:41,336 | INFO    | xai_ids |   epoch 18/20 loss=0.2204
+2026-08-17 13:51:41,817 | INFO    | xai_ids |   epoch 20/20 loss=0.2190
+2026-08-17 13:51:41,835 | INFO    | xai_ids | model metrics: {'accuracy': 0.8986547959448922, 'precision': 0.8731364475365612, 'recall': 0.9022815640818722, 'f1': 0.887469783887145}
+2026-08-17 13:51:41,838 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-17 13:51:41,838 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-17 13:51:43,488 | INFO    | xai_ids | attack: pgd strand=tamper objective=attribution eps=0.03 steps=50
+2026-08-17 13:57:15,814 | INFO    | xai_ids | computing metrics ...
+2026-08-17 13:57:17,586 | INFO    | xai_ids | row -> results/v2/results.csv | retention=1.000
+2026-08-17 13:57:17,586 | INFO    | xai_ids | [sweep 21/24] unsw-mlp-shap-tamp-pgd-e0.03-s123

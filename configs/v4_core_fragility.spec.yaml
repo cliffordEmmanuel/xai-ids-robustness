@@ -1,0 +1,18 @@
+# Final core fragility evidence: 108 cells.
+# 2 datasets x 3 eligible model/explainer pairs x 2 attacks x 3 epsilons x 3 seeds.
+output_dir: configs/v4_core_fragility
+base: configs/v4_primary_base.yaml
+model_explainer_pairs:
+  - model: xgboost
+    explainer: shap
+    shap_backend: tree
+  - model: xgboost
+    explainer: lime
+  - model: mlp
+    explainer: lime
+axes:
+  dataset: [cicids2017, unsw_nb15]
+  strand: [fragility]
+  method: [fgsm, pgd]
+  epsilon: [0.01, 0.03, 0.05]
+  seed: [42, 7, 123]

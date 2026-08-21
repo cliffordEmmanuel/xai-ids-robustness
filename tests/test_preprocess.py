@@ -29,21 +29,12 @@ def test_split_scale_and_shapes():
     assert b.feature_names == ["a", "b", "c", "d"]
 
 
-def test_attack_subset():
-    raw = _raw()
-    b = preprocess(raw, seed=42, attack_subset_size=10, balance="none")
-    assert b.X_attack.shape == (10, 4)
-    assert len(b.attack_indices) == 10
-    assert b.attack_indices.max() < len(b.y_test)
-    assert np.array_equal(b.X_attack, b.X_test[b.attack_indices])
-
-
 def test_frozen_and_deterministic():
     raw = _raw()
     b1 = preprocess(raw, seed=42, balance="none")
     b2 = preprocess(raw, seed=42, balance="none")
     assert np.array_equal(b1.X_test, b2.X_test)
-    assert np.array_equal(b1.attack_indices, b2.attack_indices)
+    assert np.array_equal(b1.X_train, b2.X_train)
 
 
 def test_undersample_balances_train_only():
@@ -60,3 +51,28 @@ def test_no_scaler_when_none():
     raw = _raw()
     b = preprocess(raw, normalise="none", balance="none")
     assert b.scaler is None
+
+
+def test_categorical_encoding_is_fitted_on_training_rows_only():
+    # Test-only values must be represented by the fitted ``other`` bucket, not
+    # become columns or affect the category vocabulary.
+    train = pd.DataFrame(
+        {
+            "value": np.arange(20, dtype=float),
+            "proto": ["tcp"] * 10 + ["udp"] * 10,
+        }
+    )
+    test = pd.DataFrame(
+        {
+            "value": np.arange(20, 24, dtype=float),
+            "proto": ["test_only"] * 4,
+        }
+    )
+    from xai_ids.datasets.categorical import TrainOnlyCategoricalEncoder
+
+    encoder = TrainOnlyCategoricalEncoder(columns=("proto",), top_n={"proto": 2})
+    encoder.fit(train)
+    transformed_test = encoder.transform(test)
+
+    assert "proto_test_only" not in encoder.output_columns_
+    assert transformed_test["proto_other"].eq(1).all()

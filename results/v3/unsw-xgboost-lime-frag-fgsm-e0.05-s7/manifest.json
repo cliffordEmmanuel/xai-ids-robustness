@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "c4be97741f0aa6d0ac21d85c8a62bf36db87a9bf236198d9b93a8a745f3cd1b3"
+    },
+    "fidelity.json": {
+      "sha256": "e257a4deb3d13230829c091da5be1cb734f3a514ba8c39d1f677bb0e91b2cea8"
+    },
+    "metrics.json": {
+      "sha256": "0649aca7d0b491d6c8749faec153d6adce2cc84cf16a437d8eee4435cd48a18a"
+    },
+    "noise_floor.npz": {
+      "sha256": "d7020a9eac60d4c301982cc2b73ca7faac5660da506d0df6b714b666af289535"
+    },
+    "per_flow.csv": {
+      "sha256": "9c09ff7952b76f0cd504f74ee8f21dbce2a7bf2ca13424eecdd737d1af5360c6"
+    },
+    "provenance.json": {
+      "sha256": "9e6f1263a469ad9d8900828401bc35a64aedb2b7bb49631777688da242384b76"
+    }
+  },
+  "created_utc": "2026-08-18T05:51:18.804920+00:00",
+  "experiment_id": "unsw-xgboost-lime-frag-fgsm-e0.05-s7",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

@@ -1,0 +1,9 @@
+2026-08-17 15:06:32,147 | INFO    | xai_ids | run dir: results/v2/unsw-xgboost-shap-frag-pgd-e0.03-s123
+2026-08-17 15:06:32,147 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-17 15:06:32,893 | INFO    | xai_ids | loading cached model results/v2/unsw-xgboost-s123/model.ubj
+2026-08-17 15:06:32,947 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-17 15:06:32,947 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-17 15:06:33,124 | INFO    | xai_ids | attack: pgd strand=fragility objective=loss eps=0.03 steps=50
+2026-08-17 15:06:33,532 | INFO    | xai_ids | computing metrics ...
+2026-08-17 15:06:34,048 | INFO    | xai_ids | row -> results/v2/results.csv | retention=0.348
+2026-08-17 15:06:34,048 | INFO    | xai_ids | [sweep 88/144] unsw-xgboost-shap-frag-pgd-e0.05-s42

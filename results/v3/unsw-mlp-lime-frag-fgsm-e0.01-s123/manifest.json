@@ -1,0 +1,27 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "af39925ebc688186f08c592eba8f9047112839e7359adb93d4c3f957cf4df8e9"
+    },
+    "fidelity.json": {
+      "sha256": "66a692bce6cac8b30dbe3ade0400f89f29a846cd44982f2994568c4b65e94898"
+    },
+    "metrics.json": {
+      "sha256": "597e828c80afe1efb8aae958f472e6f127637fcc507bc7e949c62bf9712ea7e6"
+    },
+    "noise_floor.npz": {
+      "sha256": "a0c1e4ab0e8c0090fe2500ec0e1de36c366fcb110955b007508958e59adb8c69"
+    },
+    "per_flow.csv": {
+      "sha256": "d99a49a010185bb84e6b8d2399ef0f89b7691229582ebdd6dff7521ba7988cbc"
+    },
+    "provenance.json": {
+      "sha256": "70777a0950b876dea273db4a453c48f54d8b6a7f63abc414c38e6eec43d186d9"
+    }
+  },
+  "created_utc": "2026-08-18T06:00:26.029259+00:00",
+  "experiment_id": "unsw-mlp-lime-frag-fgsm-e0.01-s123",
+  "kind": "experiment-run",
+  "results_version": "v3",
+  "schema_version": "3.5"
+}

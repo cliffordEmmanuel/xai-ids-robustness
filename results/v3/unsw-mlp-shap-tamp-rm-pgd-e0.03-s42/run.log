@@ -1,0 +1,9 @@
+2026-08-18 11:55:28,044 | INFO    | xai_ids | run dir: results/v3/unsw-mlp-shap-tamp-rm-pgd-e0.03-s42
+2026-08-18 11:55:28,045 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-18 11:55:28,942 | INFO    | xai_ids | loading cached model results/v3/unsw-mlp-s42/model.pt
+2026-08-18 11:55:28,968 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 11:55:28,968 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-18 11:55:30,587 | INFO    | xai_ids | attack: pgd strand=tamper objective=attribution eps=0.03 steps=50
+2026-08-18 12:01:09,544 | INFO    | xai_ids | computing metrics ...
+2026-08-18 12:01:09,684 | INFO    | xai_ids | row -> results/v3/results.csv | retention=1.000
+2026-08-18 12:01:09,684 | INFO    | xai_ids | [sweep 20/24] unsw-mlp-shap-tamp-rm-pgd-e0.03-s7

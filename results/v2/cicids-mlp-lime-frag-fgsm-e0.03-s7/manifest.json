@@ -1,0 +1,18 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "7da2481f120f75e483438d7d23c7a25d2723ebaac6c8d7a7c5994df7d8f02693"
+    },
+    "metrics.json": {
+      "sha256": "bc418025164f58837bbcfcfaefd90c04d77e7c8a6813c35bffbec5ccba3e2dfe"
+    },
+    "provenance.json": {
+      "sha256": "703e1cfeab42d9030f9730e12855c3f21a974268fae2b8fcef007d16f010dcaf"
+    }
+  },
+  "created_utc": "2026-08-17T15:00:59.681826+00:00",
+  "experiment_id": "cicids-mlp-lime-frag-fgsm-e0.03-s7",
+  "kind": "experiment-run",
+  "results_version": "v2",
+  "schema_version": "2.0"
+}

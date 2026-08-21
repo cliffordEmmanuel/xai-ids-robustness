@@ -8,6 +8,7 @@ import re
 import numpy as np
 
 from xai_ids.reproducibility import (
+    capture_code_state,
     capture_versions,
     generate_run_id,
     make_run_dir,
@@ -52,9 +53,16 @@ def test_capture_versions_has_core() -> None:
     assert "numpy" in v
 
 
+def test_capture_code_state_has_a_stable_shape() -> None:
+    state = capture_code_state()
+    assert set(state) == {"git_revision", "worktree_dirty", "changed_file_count"}
+
+
 def test_write_provenance(tmp_path) -> None:
-    out = write_provenance(tmp_path, config=None, seed=7)
+    out = write_provenance(tmp_path, config=None, seed=7, extra={"stage": "test"})
     assert out.exists()
     record = json.loads(out.read_text())
     assert record["seed"] == 7
     assert "versions" in record and "python" in record["versions"]
+    assert "code" in record
+    assert record["extra"] == {"stage": "test"}

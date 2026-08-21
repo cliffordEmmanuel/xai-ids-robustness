@@ -43,10 +43,15 @@ def test_shap_tree_shape():
 def test_shap_kernel_shape():
     _require("shap")
     model, X, _ = _fitted_xgb()
-    expl = EXPLAINERS.get("shap")(backend="kernel", background_size=20, kernel_nsamples=50)
+    expl = EXPLAINERS.get("shap")(
+        backend="kernel", background_size=20, kernel_nsamples=50, kernel_l1_reg=0.0001
+    )
     attrs = expl.explain(model, X[:5], background=X)
     assert attrs.shape == (5, X.shape[1])
     assert np.isfinite(attrs).all()
+    diagnostics = expl.numerical_diagnostics()
+    assert diagnostics["attributions_finite"] is True
+    assert diagnostics["max_additivity_error"] < 1e-6
 
 
 def test_lime_shape():

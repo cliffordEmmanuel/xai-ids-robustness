@@ -1,0 +1,9 @@
+2026-08-18 06:01:05,119 | INFO    | xai_ids | run dir: results/v3/unsw-mlp-lime-frag-fgsm-e0.03-s123
+2026-08-18 06:01:05,119 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-18 06:01:05,980 | INFO    | xai_ids | loading cached model results/v3/unsw-mlp-s123/model.pt
+2026-08-18 06:01:06,007 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 06:01:06,007 | INFO    | xai_ids | baseline lime attributions ...
+2026-08-18 06:01:07,549 | INFO    | xai_ids | attack: fgsm strand=fragility objective=loss eps=0.03 steps=1
+2026-08-18 06:01:24,386 | INFO    | xai_ids | computing metrics ...
+2026-08-18 06:01:24,537 | INFO    | xai_ids | row -> results/v3/results.csv | retention=0.970
+2026-08-18 06:01:24,537 | INFO    | xai_ids | [sweep 133/144] unsw-mlp-lime-frag-fgsm-e0.05-s42

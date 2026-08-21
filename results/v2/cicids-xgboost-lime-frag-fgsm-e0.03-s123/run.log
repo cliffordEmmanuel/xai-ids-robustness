@@ -1,0 +1,9 @@
+2026-08-17 14:45:10,199 | INFO    | xai_ids | run dir: results/v2/cicids-xgboost-lime-frag-fgsm-e0.03-s123
+2026-08-17 14:45:10,199 | INFO    | xai_ids | loading + preprocessing dataset 'cicids2017' ...
+2026-08-17 14:45:28,974 | INFO    | xai_ids | loading cached model results/v2/cicids-xgboost-s123/model.ubj
+2026-08-17 14:45:29,952 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-17 14:45:29,952 | INFO    | xai_ids | baseline lime attributions ...
+2026-08-17 14:45:33,380 | INFO    | xai_ids | attack: fgsm strand=fragility objective=loss eps=0.03 steps=1
+2026-08-17 14:45:36,762 | INFO    | xai_ids | computing metrics ...
+2026-08-17 14:45:40,466 | INFO    | xai_ids | row -> results/v2/results.csv | retention=0.002
+2026-08-17 14:45:40,467 | INFO    | xai_ids | [sweep 25/144] cicids-xgboost-lime-frag-fgsm-e0.05-s42

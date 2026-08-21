@@ -72,12 +72,11 @@ Result: ~76 numeric features, binary label.
    `meta`. *Why:* same binary framing as CICIDS.
 4. **Drop `id`, `attack_cat`, `label`** from the features. *Why:* `id` is a row
    index (leakage), `attack_cat` is a second label, `label` is the target.
-5. **One-hot encode `proto`, `service`, `state`** with rare-category grouping
-   (keep the top ~15/15/12, fold the rest into `other`). *Why:* these are
-   categorical and models/attributions need numeric input; the cap stops
-   high-cardinality `proto` (100+ values) from exploding into hundreds of sparse
-   columns.
-6. **Coerce numeric, handle NaN/inf, drop duplicates** — as above.
+5. **Retain `proto`, `service`, and `state` as categorical fields.** Their
+   rare-category grouping and one-hot encoding are deferred until after the
+   train/test split. This prevents test-only category frequencies or values from
+   influencing the training representation.
+6. **Coerce numeric fields, handle NaN/inf, drop duplicates** — as above.
 
 Result: ~45 base fields expanded by one-hot into numeric features, binary label.
 
@@ -88,14 +87,17 @@ Result: ~45 base fields expanded by one-hot into numeric features, binary label.
 Identical for both datasets. Inputs come from `dataset.*` config plus
 `run.seed`.
 
-1. **To numeric matrix.** Convert the cleaned table to a float array + label
-   vector.
-2. **Stratified train/test split** (`test_size`, seeded).
+1. **Stratified train/test split** (`test_size`, seeded).
    *Why stratified:* both datasets are imbalanced; stratifying preserves the
    attack ratio in both splits so the test set stays representative.
    *Why our own split:* running both datasets through the same split keeps them
    comparable and lets us freeze a single test set per run.
-3. **Fit the scaler on train only, then transform both** (StandardScaler by
+2. **Fit categorical encoding on train only, then transform both.** For UNSW,
+   the top categories and one-hot output columns are learned from training rows;
+   unseen or rare test values map to `other`. *Why:* fitting them before the
+   split would leak test-distribution information.
+3. **Convert to numeric matrix, fit the scaler on train only, then transform
+   both** (StandardScaler by
    default; MinMax or none available). *Why train-only:* fitting on all data
    leaks test statistics into training. *Why scale at all:* it puts features on a
    common scale — needed for the MLP, for meaningful distances in LIME/SHAP, and
@@ -121,9 +123,22 @@ the tamper target rule to name/locate the suppressed feature.
 ## Persistence
 
 `save_bundle` / `load_bundle` write the arrays (`arrays.npz`), the fitted scaler
-(`scaler.joblib`), and `meta.json`. *Why:* preprocessing runs once per config;
-persisting the **frozen** split + scaler makes every downstream step (models,
-explanations, attacks) reproducible and provenance-traceable.
+(`scaler.joblib`), any fitted categorical transformer
+(`categorical_transformer.joblib`), and `meta.json`. *Why:* preprocessing runs
+once per config; persisting the **frozen** split and all train-fitted transforms
+makes every downstream step (models, explanations, attacks) reproducible and
+provenance-traceable.
+
+## Fidelity reference input
+
+Deletion and insertion fidelity use one fixed reference vector derived from the
+training split for both the original and adversarial explanations. Continuous
+features use their training mean. One-hot categorical groups use their most
+frequent training category, so the reference represents a valid category rather
+than fractional dummy values. During deletion and insertion, every one-hot group
+is changed together and ranked by its largest member attribution. The reference
+vector and group definition are saved in each experiment's `fidelity.json` and
+provenance record.
 
 ---
 

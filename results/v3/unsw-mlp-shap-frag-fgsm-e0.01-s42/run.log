@@ -1,0 +1,20 @@
+2026-08-18 05:57:50,958 | INFO    | xai_ids | run dir: results/v3/unsw-mlp-shap-frag-fgsm-e0.01-s42
+2026-08-18 05:57:50,958 | INFO    | xai_ids | loading + preprocessing dataset 'unsw_nb15' ...
+2026-08-18 05:57:51,834 | INFO    | xai_ids | training mlp (class_weight=True) ...
+2026-08-18 05:57:52,333 | INFO    | xai_ids |   epoch 2/20 loss=0.2562
+2026-08-18 05:57:52,886 | INFO    | xai_ids |   epoch 4/20 loss=0.2408
+2026-08-18 05:57:53,436 | INFO    | xai_ids |   epoch 6/20 loss=0.2341
+2026-08-18 05:57:53,940 | INFO    | xai_ids |   epoch 8/20 loss=0.2303
+2026-08-18 05:57:54,474 | INFO    | xai_ids |   epoch 10/20 loss=0.2270
+2026-08-18 05:57:55,022 | INFO    | xai_ids |   epoch 12/20 loss=0.2243
+2026-08-18 05:57:55,559 | INFO    | xai_ids |   epoch 14/20 loss=0.2220
+2026-08-18 05:57:56,099 | INFO    | xai_ids |   epoch 16/20 loss=0.2206
+2026-08-18 05:57:56,661 | INFO    | xai_ids |   epoch 18/20 loss=0.2193
+2026-08-18 05:57:57,156 | INFO    | xai_ids |   epoch 20/20 loss=0.2181
+2026-08-18 05:57:57,216 | INFO    | xai_ids | model metrics: {'accuracy': 0.9024659312134977, 'precision': 0.8963518834980311, 'recall': 0.8821937842778793, 'f1': 0.8892164811675389, 'test_n_total': 30820, 'test_n_benign': 17145, 'test_n_attack': 13675, 'true_negative': 15750, 'false_positive': 1395, 'false_negative': 1611, 'true_positive': 12064, 'min_attack_recall': 0.8, 'min_f1': 0.8, 'comparison_eligible': True}
+2026-08-18 05:57:57,231 | INFO    | xai_ids | true-positive attack subset: 500 flows
+2026-08-18 05:57:57,231 | INFO    | xai_ids | baseline shap attributions ...
+2026-08-18 05:57:58,891 | INFO    | xai_ids | attack: fgsm strand=fragility objective=loss eps=0.01 steps=1
+2026-08-18 05:58:00,608 | INFO    | xai_ids | computing metrics ...
+2026-08-18 05:58:00,747 | INFO    | xai_ids | row -> results/v3/results.csv | retention=0.992
+2026-08-18 05:58:00,747 | INFO    | xai_ids | [sweep 110/144] unsw-mlp-shap-frag-fgsm-e0.01-s7

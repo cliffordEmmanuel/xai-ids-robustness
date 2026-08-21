@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "n_total": 500,
+    "n_preserved": 500,
+    "n_flipped": 0,
+    "retention_rate": 1.0,
+    "n_frozen_due_prediction_flip": 500,
+    "model_queries": 1537,
+    "explanation_queries": 21,
+    "n_perturbed": 7,
+    "n_explainer_convergence_warnings": 1
+  },
+  "model_quality": {
+    "accuracy": 0.9989543988017007,
+    "precision": 0.993851883599604,
+    "recall": 0.9992421765877143,
+    "f1": 0.9965397411103949,
+    "test_n_total": 446633,
+    "test_n_benign": 379335,
+    "test_n_attack": 67298,
+    "true_negative": 378919,
+    "false_positive": 416,
+    "false_negative": 51,
+    "true_positive": 67247,
+    "min_attack_recall": 0.8,
+    "min_f1": 0.8,
+    "comparison_eligible": true
+  },
+  "attack_oracle_accounting": {
+    "model": {
+      "access": "probability_query",
+      "queries": 1537,
+      "budget": 125000,
+      "query_unit": "individual input probability vector"
+    },
+    "explanation": {
+      "access": "explanation_oracle",
+      "queries": 21,
+      "budget": 250,
+      "query_unit": "logical explanation-service request per batch",
+      "internal_model_queries": "not_observed_at_oracle_boundary"
+    }
+  },
+  "noise_floor": {
+    "mode": "not_applicable",
+    "seeds": [],
+    "per_flow_artifact": "noise_floor.npz"
+  },
+  "explainer_warnings": {
+    "convergence_warning_count": 1,
+    "convergence_warning_messages": [
+      "Regressors in active set degenerate. Dropping a regressor, after 7 iterations, i.e. alpha=2.962e-04, with an active set of 7 regressors, and the smallest cholesky pivot element being 2.220e-16. Reduce max_iter or increase eps parameters."
+    ]
+  },
+  "all_attacked": {
+    "n_evaluated": 500,
+    "retention_rate": 1.0,
+    "drift_cosine": 0.18449301748457508,
+    "drift_l1": 0.8010287505344307,
+    "drift_l2": 0.23625307002607088,
+    "spearman": 0.2685896014476168,
+    "topk_jaccard": 0.21151435526977325,
+    "fidelity_baseline_deletion": 0.024296295746460982,
+    "fidelity_adversarial_deletion": 0.025733752010493938,
+    "fidelity_baseline_insertion": 0.6082093369899501,
+    "fidelity_adversarial_insertion": 0.5940037252348344,
+    "tamper_success_topk_displacement": 0.022,
+    "target_baseline_abs_attribution": 0.3596986888670928,
+    "target_adversarial_abs_attribution": 0.34952298525927333,
+    "target_relative_attribution_reduction": 0.02128393720598676,
+    "target_baseline_rank": 1.0,
+    "target_adversarial_rank": 2.132,
+    "target_rank_deterioration": 1.132,
+    "target_in_topk_baseline": 1.0,
+    "target_in_topk_adversarial": 0.978
+  },
+  "prediction_preserved": {
+    "n_evaluated": 500,
+    "retention_rate": 1.0,
+    "drift_cosine": 0.18449301748457508,
+    "drift_l1": 0.8010287505344307,
+    "drift_l2": 0.23625307002607088,
+    "spearman": 0.2685896014476168,
+    "topk_jaccard": 0.21151435526977325,
+    "fidelity_baseline_deletion": 0.024296295746460982,
+    "fidelity_adversarial_deletion": 0.025733752010493938,
+    "fidelity_baseline_insertion": 0.6082093369899501,
+    "fidelity_adversarial_insertion": 0.5940037252348344,
+    "tamper_success_topk_displacement": 0.022,
+    "target_baseline_abs_attribution": 0.3596986888670928,
+    "target_adversarial_abs_attribution": 0.34952298525927333,
+    "target_relative_attribution_reduction": 0.02128393720598676,
+    "target_baseline_rank": 1.0,
+    "target_adversarial_rank": 2.132,
+    "target_rank_deterioration": 1.132,
+    "target_in_topk_baseline": 1.0,
+    "target_in_topk_adversarial": 0.978
+  }
+}

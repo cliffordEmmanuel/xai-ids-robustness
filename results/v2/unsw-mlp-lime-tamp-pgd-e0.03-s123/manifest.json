@@ -1,0 +1,18 @@
+{
+  "artifacts": {
+    "attack.npz": {
+      "sha256": "cad812f90ee5593f9ac5687a39d38709c1e0d84fcd5c996d0c812a2e3101ba41"
+    },
+    "metrics.json": {
+      "sha256": "155ebf6716cabb1ccd8aba42bc1ed9ca380d8158c9123b87f504348e044579d0"
+    },
+    "provenance.json": {
+      "sha256": "4900dbff592f5431b5802815419bc5478b62679b2fe96cf77f41d66f3b60636f"
+    }
+  },
+  "created_utc": "2026-08-17T14:18:20.333754+00:00",
+  "experiment_id": "unsw-mlp-lime-tamp-pgd-e0.03-s123",
+  "kind": "experiment-run",
+  "results_version": "v2",
+  "schema_version": "2.0"
+}
