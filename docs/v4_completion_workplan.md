@@ -1,5 +1,13 @@
 # V4 Completion Workplan: bounded final evidence
 
+> **Historical planning record.** This document describes the pre-run plan,
+> including a planned 138-row core. The completed release instead contains a
+> validated 126-row primary core: the attempted KernelSHAP/XGBoost control
+> failed its frozen production stability gate and was excluded. See
+> [`v4_results_status.md`](v4_results_status.md) and
+> [`v4_analysis_manifest.json`](v4_analysis_manifest.json) for the final
+> evidence record.
+
 ## Objective
 
 Produce a clean, defensible final evidence record without trying to force

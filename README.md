@@ -1,15 +1,15 @@
 # xai-ids-robustness
 
 A reproducible benchmarking framework for evaluating the **tamper resistance** of
-explainable-AI (XAI) methods — SHAP and LIME — in machine-learning-based intrusion
+explainable-AI (XAI) methods: SHAP and LIME, in machine-learning-based intrusion
 detection systems (IDS).
 
 The framework runs two attack strands under a black-box attack setting:
 
-- **Fragility** — standard FGSM/PGD perturbations (loss objective); explanation
+- **Fragility**: standard FGSM/PGD perturbations (loss objective); explanation
   change is reported for all attacked flows and, separately, for flows whose
   prediction is preserved.
-- **Tamper resistance** — a targeted attack (attribution objective) that
+- **Tamper resistance**: a targeted attack (attribution objective) that
   deliberately redirects the explanation while the prediction is held fixed.
 
 See [`docs/implementation_workplan.md`](docs/implementation_workplan.md) for the
@@ -27,7 +27,7 @@ the ML stack's `numba`/`llvmlite` dependencies lack wheels for it. `uv` will fet
 # core skeleton + dev tools (config, interfaces, reproducibility, pytest, ruff)
 uv sync
 
-# with the ML stack (from Phase 2 onward)
+# with the ML stack 
 uv sync --extra ml
 ```
 
@@ -60,81 +60,74 @@ Download the datasets once and place them in `data/` (gitignored):
 - CICIDS2017 — https://www.unb.ca/cic/datasets/ids-2017.html → `data/raw/cicids2017/*.csv`
 - UNSW-NB15 — https://research.unsw.edu.au/projects/unsw-nb15-dataset → `data/raw/unsw_nb15/UNSW_NB15_{training,testing}-set.csv`
 
-## Run the experiments
+## Final thesis evidence (v4)
 
-The archived `results/v3/` record validates structurally, but its KernelSHAP
-cells are not final thesis evidence. Two completed calibration runs found no
-KernelSHAP-on-MLP setting stable enough for release. The bounded final v4
-release therefore uses TreeSHAP on XGBoost and LIME on both model families, with
-a separate strict KernelSHAP-on-XGBoost backend control. `results/v1/` through
-`results/v3/` and both calibration directories are preserved and never
-overwritten.
+The completed primary evidence release contains **126 validated rows**:
+
+- 108 fragility rows: TreeSHAP/XGBoost, LIME/XGBoost, and LIME/MLP across two
+  datasets, FGSM-style and PGD-style attacks, three perturbation budgets, and
+  three repeatability seeds;
+- 18 targeted-tamper rows for the same three model--explainer pairings.
+
+The final analysis input is `results/v4-analysis/`, derived from the preserved
+135-row raw record in `results/v4/`. The raw record also contains nine attempted
+KernelSHAP/XGBoost backend-control rows. Seven failed the frozen production
+repeat-drift gate, so all nine are excluded from robustness and tamper analysis.
+They remain audit evidence; they must not be deleted or aggregated with the
+primary core. KernelSHAP/MLP was excluded earlier at calibration.
+
+The versioned claim boundary and provenance summary are in
+[`docs/v4_results_status.md`](docs/v4_results_status.md) and
+[`docs/v4_analysis_manifest.json`](docs/v4_analysis_manifest.json). Large
+datasets and result artefacts are intentionally ignored by Git.
+
+## Reproduce or verify the final analysis
 
 ```bash
 # 1. one-time setup
 brew install libomp          # macOS only (XGBoost needs OpenMP)
 uv sync --extra ml
 
-# 2. freeze the v4 source/config revision after reviewing the generated grids
+# 2. source checks
 uv run pytest
 uv run ruff check src tests
 
-# 3. run both real-data release smokes
-uv run xai-ids grid configs/v4_core_smoke.spec.yaml
-uv run xai-ids validate-results results/smoke-v4-core \
-  --spec configs/v4_core_smoke.spec.yaml
-uv run xai-ids grid configs/v4_kernel_xgboost_smoke.spec.yaml
-uv run xai-ids validate-results results/smoke-v4-kernel-xgboost \
-  --spec configs/v4_kernel_xgboost_smoke.spec.yaml
+# 3. final derived analysis input
+uv run xai-ids validate-results results/v4-analysis
+uv run xai-ids analyze-results results/v4-analysis
+```
 
-# 4. run the 138-row v4 core release
+The stored analysis outputs include within-cohort bootstrap intervals, LIME
+attack-versus-noise summaries, and KernelSHAP stability diagnostics. They support
+conditional precision statements, not pooled population-level inference.
+
+Every final-analysis row includes frozen-test accuracy, precision, attack-class
+recall/F1, class counts, confusion-matrix counts, and
+`model_comparison_eligible`. The model-quality rule requires both attack-class
+recall and F1 to be at least 0.80; all 126 included rows meet it.
+
+## Re-run the primary grids (expensive)
+
+The following commands generate the **126-row primary core**. They use only the
+three eligible model-explainer pairings; do not add KernelSHAP/MLP cells or
+alter their axes when reproducing the release. Run them only in a clean working
+copy or a new results archive; do not append new rows to the preserved
+`results/v4/` record.
+
+```bash
 uv run xai-ids grid configs/v4_core_fragility.spec.yaml
 uv run xai-ids grid configs/v4_core_tamper.spec.yaml
-uv run xai-ids grid configs/v4_kernel_xgboost_control.spec.yaml
-```
 
-The tamper core is smaller than the fragility core, but the release claim needs
-all three core grids. The final specs deliberately use fixed
-`model_explainer_pairs`; do not add KernelSHAP/MLP cells or alter their axes in
-the release cycle. LIME and tamper cells are the slow ones.
-
-Every revised result row includes frozen-test accuracy, precision, attack-class
-recall/F1, class counts, confusion-matrix counts, and
-`model_comparison_eligible`. Comparative explanation claims require both
-attack-class recall and F1 to be at least 0.80; lower-quality model runs remain
-in the result set as explicitly labelled evidence.
-
-## Validate and analyse v4
-
-After the core grids complete, validate their combined 138-row table before
-analysis. The strict backend smoke/control is a PGD epsilon=0.03 spot-check,
-not a full fragility-surface claim.
-
-For the 138-row core release:
-
-```bash
 uv run xai-ids validate-results results/v4 \
   --spec configs/v4_core_fragility.spec.yaml \
-  --spec configs/v4_core_tamper.spec.yaml \
-  --spec configs/v4_kernel_xgboost_control.spec.yaml
+  --spec configs/v4_core_tamper.spec.yaml
 ```
 
-Then create the conditional within-cell analysis artifacts:
-
-```bash
-uv run xai-ids analyze-results results/v4
-```
-
-This writes `results/v4/analysis/per_flow_bootstrap.csv`,
-`results/v4/analysis/lime_attack_vs_noise.csv`, and the KernelSHAP
-numerical-stability tables. Bootstrap intervals and paired sign-flip p-values
-are conditional within-cell summaries; they are not pooled
-independent-condition tests.
-
-If the core validates and time permits, run the separate 18-row rank-margin
-sensitivity grid, then include `configs/v4_rank_margin.spec.yaml` in the final
-validation command. See [`docs/v4_completion_workplan.md`](docs/v4_completion_workplan.md)
-for the bounded release plan and stop rules.
+The separate KernelSHAP/XGBoost control was a reliability check, not part of the
+primary release. Its incomplete, failed production outcome is documented in the
+v4 status record; do not rerun it merely to obtain a more favourable result.
+The optional rank-margin sensitivity and synthetic exact-Shapley study remain
+future work.
 
 **Threading / OpenMP (macOS):** XGBoost defaults to a single OpenMP thread here
 (`OMP_NUM_THREADS=1`, set automatically on import) because macOS can load two
